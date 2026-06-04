@@ -1,869 +1,672 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>顔出しなしYouTube広告収入 自力攻略ロードマップ</title>
-  <script src="glossary.js"></script>
-  <style>
-    :root {
-      --red: #ff0000;
-      --red-dark: #cc0000;
-      --red-light: #fff0f0;
-      --dark: #0f0f0f;
-      --gray: #606060;
-      --light-gray: #f9f9f9;
-      --border: #e0e0e0;
-      --white: #ffffff;
-      --gold: #ffd700;
-      --green: #2ecc71;
-      --stage-colors: #e74c3c, #e67e22, #f1c40f, #2ecc71, #1abc9c, #3498db, #9b59b6, #e91e63;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>顔出しなしYouTube 自力攻略ロードマップ</title>
+<script src="glossary.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', sans-serif; background: #fafaf8; color: #1a1a18; line-height: 1.7; font-size: 15px; }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+/* ナビ */
+.top-bar { background: #fff; border-bottom: 1px solid #ebebeb; padding: 0.75rem 1.25rem; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+.top-title { font-size: 14px; font-weight: 500; color: #555; }
+.glossary-link { font-size: 12px; color: #888; text-decoration: none; padding: 4px 12px; border: 1px solid #ddd; border-radius: 20px; }
+.glossary-link:hover { color: #333; border-color: #aaa; }
 
-    body {
-      font-family: "Hiragino Sans", "Noto Sans JP", "Yu Gothic", sans-serif;
-      background: var(--light-gray);
-      color: var(--dark);
-      line-height: 1.7;
-    }
+.wrap { max-width: 720px; margin: 0 auto; padding: 1.5rem 1.25rem 4rem; }
 
-    /* ── HEADER ── */
-    header {
-      background: var(--dark);
-      color: var(--white);
-      padding: 24px 20px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-    header::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, #1a0000 0%, #0f0f0f 50%, #001a0a 100%);
-      z-index: 0;
-    }
-    header > * { position: relative; z-index: 1; }
-    header .badge {
-      display: inline-block;
-      background: var(--red);
-      color: white;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 3px 10px;
-      border-radius: 20px;
-      letter-spacing: 0.05em;
-      margin-bottom: 10px;
-    }
-    header h1 {
-      font-size: clamp(1.4rem, 4vw, 2.2rem);
-      font-weight: 900;
-      letter-spacing: -0.02em;
-      line-height: 1.3;
-      margin-bottom: 8px;
-    }
-    header h1 span { color: var(--red); }
-    header p {
-      font-size: 0.9rem;
-      color: #aaa;
-      max-width: 600px;
-      margin: 0 auto 16px;
-    }
-    .header-nav {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-    .header-nav a {
-      color: #ccc;
-      text-decoration: none;
-      font-size: 0.85rem;
-      padding: 6px 16px;
-      border: 1px solid #444;
-      border-radius: 20px;
-      transition: all 0.2s;
-    }
-    .header-nav a:hover { background: var(--red); border-color: var(--red); color: white; }
+/* フェーズナビ */
+.phase-nav { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+.phase-btn { font-size: 12px; padding: 5px 14px; border-radius: 20px; border: 1px solid #ddd; background: #fff; color: #888; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+.phase-btn.active { background: #1a1a18; color: #fff; border-color: #1a1a18; }
+.phase-btn:hover:not(.active) { border-color: #aaa; color: #444; }
 
-    /* ── STATS BAR ── */
-    .stats-bar {
-      background: white;
-      border-bottom: 1px solid var(--border);
-      padding: 14px 20px;
-      display: flex;
-      justify-content: center;
-      gap: 32px;
-      flex-wrap: wrap;
-    }
-    .stat-item { text-align: center; }
-    .stat-value { font-size: 1.5rem; font-weight: 900; color: var(--red); }
-    .stat-label { font-size: 0.72rem; color: var(--gray); }
+/* パネル */
+.phase-panel { display: none; }
+.phase-panel.active { display: block; }
 
-    /* ── MAIN LAYOUT ── */
-    main { max-width: 960px; margin: 0 auto; padding: 32px 16px 60px; }
+.section-title { font-size: 20px; font-weight: 500; margin-bottom: 0.4rem; }
+.section-sub { font-size: 13px; color: #777; margin-bottom: 1.5rem; line-height: 1.7; }
 
-    /* ── PROGRESS ── */
-    .progress-section {
-      background: white;
-      border-radius: 12px;
-      padding: 20px 24px;
-      margin-bottom: 32px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    }
-    .progress-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    .progress-title { font-size: 0.9rem; font-weight: 700; color: var(--gray); }
-    .progress-count { font-size: 0.85rem; color: var(--gray); }
-    .progress-bar {
-      background: #eee;
-      border-radius: 99px;
-      height: 10px;
-      overflow: hidden;
-    }
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--red), #ff6b6b);
-      border-radius: 99px;
-      width: 0%;
-      transition: width 0.5s ease;
-    }
+/* カード */
+.card { background: #fff; border: 1px solid #ebebeb; border-radius: 14px; padding: 1.1rem 1.25rem; margin-bottom: 1rem; }
+.card-title { font-size: 13px; font-weight: 500; color: #555; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 6px; }
 
-    /* ── STAGES ── */
-    .stage {
-      background: white;
-      border-radius: 14px;
-      margin-bottom: 24px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-      overflow: hidden;
-      transition: box-shadow 0.2s;
-    }
-    .stage:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.10); }
+/* 手順ボックス */
+.how-box { background: #f5f5f0; border-radius: 10px; padding: 0.9rem 1rem; margin: 0.75rem 0; }
+.how-title { font-size: 12px; font-weight: 500; color: #888; margin-bottom: 0.5rem; letter-spacing: 0.03em; }
+.how-step { display: flex; gap: 10px; align-items: flex-start; padding: 5px 0; }
+.how-num { width: 20px; height: 20px; background: #1a1a18; color: #fff; border-radius: 50%; font-size: 11px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.how-text { font-size: 13px; color: #444; line-height: 1.6; }
+.how-code { font-family: monospace; background: #e8e8e4; padding: 1px 6px; border-radius: 4px; font-size: 12px; }
 
-    .stage-header {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 18px 20px;
-      cursor: pointer;
-      user-select: none;
-    }
-    .stage-num {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-      font-weight: 900;
-      color: white;
-      flex-shrink: 0;
-    }
-    .stage-header-text { flex: 1; }
-    .stage-title { font-size: 1.05rem; font-weight: 800; }
-    .stage-subtitle { font-size: 0.8rem; color: var(--gray); margin-top: 2px; }
-    .stage-arrow {
-      font-size: 1.1rem;
-      color: var(--gray);
-      transition: transform 0.25s;
-    }
-    .stage.open .stage-arrow { transform: rotate(180deg); }
+/* 入力フォーム */
+.field-label { font-size: 12px; color: #777; margin-bottom: 5px; display: block; }
+input[type=text], input[type=number], textarea, select {
+  width: 100%; font-size: 14px; padding: 9px 12px;
+  border-radius: 10px; border: 1px solid #ddd;
+  background: #fafaf8; color: #1a1a18;
+  font-family: inherit;
+}
+input[type=text]:focus, input[type=number]:focus, textarea:focus { outline: none; border-color: #aaa; background: #fff; }
+textarea { min-height: 80px; resize: vertical; line-height: 1.6; }
+.field-row { display: flex; gap: 8px; align-items: flex-end; margin-bottom: 0.75rem; }
+.field-group { margin-bottom: 0.75rem; }
 
-    .stage-body {
-      display: none;
-      padding: 0 20px 20px;
-      border-top: 1px solid #f0f0f0;
-    }
-    .stage.open .stage-body { display: block; }
+/* ボタン */
+.btn { font-size: 13px; padding: 8px 18px; border-radius: 10px; border: 1px solid #ddd; background: #fff; color: #444; cursor: pointer; transition: all 0.12s; white-space: nowrap; }
+.btn:hover { background: #f5f5f0; }
+.btn-dark { background: #1a1a18; color: #fff; border-color: #1a1a18; }
+.btn-dark:hover { background: #333; }
+.btn-small { font-size: 12px; padding: 5px 12px; }
 
-    /* ── TASK LIST ── */
-    .task-list { list-style: none; margin-top: 14px; }
-    .task-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      padding: 10px 0;
-      border-bottom: 1px solid #f5f5f5;
-      cursor: pointer;
-    }
-    .task-item:last-child { border-bottom: none; }
-    .task-checkbox {
-      width: 20px;
-      height: 20px;
-      border: 2px solid #ddd;
-      border-radius: 4px;
-      flex-shrink: 0;
-      margin-top: 2px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s;
-    }
-    .task-item.done .task-checkbox {
-      background: var(--green);
-      border-color: var(--green);
-    }
-    .task-item.done .task-checkbox::after {
-      content: "✓";
-      color: white;
-      font-size: 13px;
-      font-weight: 700;
-    }
-    .task-text {
-      font-size: 0.9rem;
-      line-height: 1.5;
-      flex: 1;
-    }
-    .task-item.done .task-text {
-      text-decoration: line-through;
-      color: #aaa;
-    }
+/* ジャンルチップ */
+.genre-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 0.75rem; }
+.genre-chip { font-size: 12px; padding: 4px 12px; border-radius: 20px; border: 1px solid #ddd; background: #fff; color: #666; cursor: pointer; transition: all 0.12s; }
+.genre-chip:hover { border-color: #1a1a18; color: #1a1a18; }
 
-    /* ── TIPS BOX ── */
-    .tips-box {
-      background: #fff8e1;
-      border-left: 4px solid var(--gold);
-      border-radius: 0 8px 8px 0;
-      padding: 12px 16px;
-      margin-top: 16px;
-      font-size: 0.85rem;
-      color: #6d5000;
-    }
-    .tips-box strong { display: block; margin-bottom: 4px; font-size: 0.8rem; color: #a07800; }
+/* 結果ボックス */
+.result-box { border-radius: 10px; padding: 0.9rem 1rem; font-size: 14px; margin-top: 0.75rem; line-height: 1.7; }
+.result-ok { background: #eaf5ea; color: #2a6e2a; border: 1px solid #b8dfb8; }
+.result-ng { background: #fdecea; color: #8b2020; border: 1px solid #f5bcba; }
+.result-check { background: #fdf6e3; color: #7a5c00; border: 1px solid #f0d890; }
+.result-info { background: #e8f0fb; color: #1a4a8a; border: 1px solid #b8d0f5; }
 
-    .info-box {
-      background: #e8f4fd;
-      border-left: 4px solid #3498db;
-      border-radius: 0 8px 8px 0;
-      padding: 12px 16px;
-      margin-top: 16px;
-      font-size: 0.85rem;
-      color: #1a4a6e;
-    }
-    .info-box strong { display: block; margin-bottom: 4px; font-size: 0.8rem; color: #1a4a6e; }
+/* 指標カード */
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-bottom: 0.75rem; }
+.metric-card { background: #f5f5f0; border-radius: 10px; padding: 0.75rem; text-align: center; }
+.metric-label { font-size: 11px; color: #888; margin-bottom: 4px; }
+.metric-val { font-size: 20px; font-weight: 500; }
 
-    /* ── GLOSSARY TERM CHIP ── */
-    .term {
-      display: inline-block;
-      background: #fff0f0;
-      color: var(--red-dark);
-      border: 1px solid #ffcccc;
-      border-radius: 4px;
-      padding: 0 6px;
-      font-size: 0.85em;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    .term:hover {
-      background: var(--red);
-      color: white;
-      border-color: var(--red);
-    }
+/* チェックリスト */
+.check-item { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-bottom: 1px solid #f0f0ea; cursor: pointer; }
+.check-item:last-child { border-bottom: none; }
+.check-item input[type=checkbox] { margin-top: 3px; flex-shrink: 0; width: 16px; height: 16px; cursor: pointer; }
+.check-item label { font-size: 14px; cursor: pointer; line-height: 1.5; }
+.check-item.done label { color: #aaa; text-decoration: line-through; }
 
-    /* ── MILESTONE BADGE ── */
-    .milestone {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: linear-gradient(135deg, #ffd700, #ffaa00);
-      color: #7a4800;
-      border-radius: 20px;
-      padding: 4px 14px;
-      font-size: 0.78rem;
-      font-weight: 800;
-      margin-bottom: 12px;
-    }
+.progress-wrap { height: 6px; background: #eee; border-radius: 3px; margin: 0.75rem 0 0.25rem; overflow: hidden; }
+.progress-fill { height: 100%; background: #2a6e2a; border-radius: 3px; transition: width 0.3s; }
+.progress-label { font-size: 12px; color: #aaa; text-align: right; }
 
-    /* ── TOOL GRID ── */
-    .tool-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 8px;
-      margin-top: 12px;
-    }
-    .tool-card {
-      background: var(--light-gray);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 10px 12px;
-      font-size: 0.82rem;
-    }
-    .tool-card .tool-name { font-weight: 700; color: var(--dark); }
-    .tool-card .tool-note { color: var(--gray); font-size: 0.75rem; margin-top: 2px; }
-    .tool-card .tool-free {
-      display: inline-block;
-      background: var(--green);
-      color: white;
-      font-size: 0.65rem;
-      font-weight: 700;
-      padding: 1px 6px;
-      border-radius: 4px;
-      margin-top: 4px;
-    }
-    .tool-card .tool-paid {
-      display: inline-block;
-      background: #e67e22;
-      color: white;
-      font-size: 0.65rem;
-      font-weight: 700;
-      padding: 1px 6px;
-      border-radius: 4px;
-      margin-top: 4px;
-    }
+/* 比較テーブル */
+.cmp-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.cmp-table th { text-align: left; font-size: 11px; color: #aaa; padding: 6px 8px; border-bottom: 1px solid #eee; }
+.cmp-table td { padding: 9px 8px; border-bottom: 1px solid #f0f0ea; }
+.cmp-table tr:last-child td { border-bottom: none; }
 
-    /* ── MODAL ── */
-    #glossary-modal { display: none; }
-    #glossary-modal.active { display: block; }
-    #glossary-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.55);
-      z-index: 1000;
-      backdrop-filter: blur(2px);
-    }
-    #glossary-popup {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: white;
-      border-radius: 16px;
-      padding: 28px 28px 22px;
-      max-width: 420px;
-      width: 90%;
-      z-index: 1001;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
-    }
-    #glossary-popup-category {
-      display: inline-block;
-      background: var(--red);
-      color: white;
-      font-size: 0.72rem;
-      font-weight: 700;
-      padding: 2px 10px;
-      border-radius: 20px;
-      margin-bottom: 10px;
-    }
-    #glossary-popup h3 {
-      font-size: 1.1rem;
-      font-weight: 800;
-      margin-bottom: 10px;
-      color: var(--dark);
-    }
-    #glossary-popup p {
-      font-size: 0.88rem;
-      color: #333;
-      line-height: 1.75;
-      margin-bottom: 18px;
-    }
-    #glossary-close {
-      display: block;
-      width: 100%;
-      padding: 10px;
-      background: var(--dark);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    #glossary-close:hover { background: #333; }
+/* シミュレーター出力 */
+.sim-box { background: #f5f5f0; border-radius: 10px; padding: 0.9rem 1rem; margin-top: 0.75rem; }
+.sim-row { display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0; }
+.sim-val { font-weight: 500; }
 
-    /* ── FOOTER ── */
-    footer {
-      text-align: center;
-      padding: 32px 16px;
-      font-size: 0.8rem;
-      color: #aaa;
-      border-top: 1px solid var(--border);
-    }
-    footer a { color: var(--red); text-decoration: none; }
-    footer a:hover { text-decoration: underline; }
+/* プロフィールタグ */
+.profile-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 0.75rem; }
+.profile-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: #f5f5f0; border: 1px solid #eee; color: #666; display: flex; align-items: center; gap: 6px; }
+.tag-del { cursor: pointer; color: #ccc; font-size: 14px; line-height: 1; }
+.tag-del:hover { color: #888; }
 
-    /* ── RESPONSIVE ── */
-    @media (max-width: 600px) {
-      .stats-bar { gap: 20px; }
-      .stage-header { padding: 14px 16px; }
-      .stage-body { padding: 0 16px 16px; }
-      #glossary-popup { padding: 22px 20px 18px; }
-    }
-  </style>
+/* ステップ行 */
+.step-row { display: flex; gap: 12px; align-items: flex-start; padding: 9px 0; border-bottom: 1px solid #f0f0ea; }
+.step-row:last-child { border-bottom: none; }
+.step-num { width: 24px; height: 24px; border-radius: 50%; background: #f5f5f0; border: 1px solid #ddd; font-size: 11px; font-weight: 500; color: #888; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.step-text { font-size: 14px; line-height: 1.5; }
+.step-sub { font-size: 12px; color: #aaa; margin-top: 2px; }
+
+/* 用語ポップアップ */
+.term-link { border-bottom: 1px dashed #aaa; cursor: pointer; color: inherit; }
+.term-link:hover { border-bottom-color: #333; }
+
+.popup-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.25); z-index: 500; }
+.popup-overlay.show { display: flex; align-items: center; justify-content: center; padding: 1rem; }
+.popup-box { background: #fff; border-radius: 16px; padding: 1.25rem 1.5rem; max-width: 420px; width: 100%; position: relative; box-shadow: 0 8px 32px rgba(0,0,0,0.12); }
+.popup-close { position: absolute; top: 12px; right: 14px; font-size: 18px; cursor: pointer; color: #aaa; line-height: 1; }
+.popup-close:hover { color: #333; }
+.popup-name { font-size: 18px; font-weight: 500; margin-bottom: 2px; }
+.popup-reading { font-size: 12px; color: #aaa; margin-bottom: 0.75rem; }
+.popup-simple { font-size: 14px; font-weight: 500; color: #333; margin-bottom: 0.6rem; padding: 0.6rem 0.9rem; background: #f5f5f0; border-radius: 8px; }
+.popup-detail { font-size: 13px; color: #666; line-height: 1.7; margin-bottom: 0.75rem; }
+.popup-link { font-size: 12px; color: #888; text-decoration: none; }
+.popup-link:hover { color: #333; }
+
+.hidden { display: none; }
+</style>
 </head>
 <body>
 
-<!-- HEADER -->
-<header>
-  <div class="badge">🎬 完全無料・顔出し不要</div>
-  <h1>YouTube <span>広告収入</span><br>自力攻略ロードマップ</h1>
-  <p>登録者0人から月収5万円超えを目指す、顔出しなしYouTubeの完全実践ガイド</p>
-  <nav class="header-nav">
-    <a href="index.html">📋 ロードマップ</a>
-    <a href="glossary.html">📖 用語集</a>
-  </nav>
-</header>
+<div class="top-bar">
+  <span class="top-title">顔出しなしYouTube 自力攻略ロードマップ</span>
+  <a href="glossary.html" class="glossary-link">📖 用語集</a>
+</div>
 
-<!-- STATS BAR -->
-<div class="stats-bar">
-  <div class="stat-item">
-    <div class="stat-value">8</div>
-    <div class="stat-label">攻略ステージ</div>
+<div class="wrap">
+
+<!-- フェーズナビ -->
+<div class="phase-nav">
+  <button class="phase-btn active" onclick="showPhase(0)">0. 仕組み理解</button>
+  <button class="phase-btn" onclick="showPhase(1)">1. ジャンル選定</button>
+  <button class="phase-btn" onclick="showPhase(2)">2. 企画選び</button>
+  <button class="phase-btn" onclick="showPhase(3)">3. 動画制作</button>
+  <button class="phase-btn" onclick="showPhase(4)">4. 収益化</button>
+  <button class="phase-btn" onclick="showPhase(5)">5. 外注・仕組み化</button>
+  <button class="phase-btn" onclick="showPhase(6)">6. 売却判断</button>
+  <button class="phase-btn" onclick="showPhase(7)">自分について</button>
+</div>
+
+<!-- Phase 0 -->
+<div class="phase-panel active" id="phase0">
+  <p class="section-title">顔出しなしYouTubeの基本的な仕組み</p>
+  <p class="section-sub">まずここを読んで全体像をつかんでください。顔も声も不要です。</p>
+
+  <div class="card">
+    <p class="card-title">お金が入るまでの流れ</p>
+    <div class="step-row"><div class="step-num">1</div><div><p class="step-text"><span class="term-link" onclick="showTerm('ジャンル')">ジャンル</span>を決めて動画を投稿する</p><p class="step-sub">顔出し不要。AI台本＋動画生成ツールで完結します</p></div></div>
+    <div class="step-row"><div class="step-num">2</div><div><p class="step-text">YouTubeの<span class="term-link" onclick="showTerm('アルゴリズム')">アルゴリズム</span>が視聴者に届けてくれる</p><p class="step-sub">投稿した動画は何年後も見られ続けます（<span class="term-link" onclick="showTerm('ストック型')">ストック型</span>）</p></div></div>
+    <div class="step-row"><div class="step-num">3</div><div><p class="step-text"><span class="term-link" onclick="showTerm('収益化')">収益化</span>の条件を達成するとお金が入り始める</p><p class="step-sub"><span class="term-link" onclick="showTerm('チャンネル登録者数')">チャンネル登録者数</span>1,000人＋<span class="term-link" onclick="showTerm('総再生時間')">総再生時間</span>4,000時間が条件</p></div></div>
+    <div class="step-row"><div class="step-num">4</div><div><p class="step-text">収入を使って作業を他の人に頼む（<span class="term-link" onclick="showTerm('外注化')">外注化</span>）</p><p class="step-sub">自分の時間を減らしながら収益を増やす</p></div></div>
+    <div class="step-row"><div class="step-num">5</div><div><p class="step-text">育てたチャンネルをまとまった金額で<span class="term-link" onclick="showTerm('売却')">売却</span>する</p><p class="step-sub">月収10万円のチャンネルなら120〜360万円で売れることがあります</p></div></div>
   </div>
-  <div class="stat-item">
-    <div class="stat-value">50+</div>
-    <div class="stat-label">実践タスク</div>
+
+  <div class="card">
+    <p class="card-title">収益化の条件（YouTube公式）</p>
+    <div class="metric-grid">
+      <div class="metric-card"><p class="metric-label">チャンネル登録者数</p><p class="metric-val">1,000人</p></div>
+      <div class="metric-card"><p class="metric-label">総再生時間（過去12ヶ月）</p><p class="metric-val">4,000時間</p></div>
+      <div class="metric-card"><p class="metric-label">目標達成期間</p><p class="metric-val">3ヶ月</p></div>
+    </div>
+    <p style="font-size:12px; color:#aaa;">3ヶ月で達成できない場合はジャンル・企画を見直します</p>
   </div>
-  <div class="stat-item">
-    <div class="stat-value">30</div>
-    <div class="stat-label">用語解説</div>
-  </div>
-  <div class="stat-item">
-    <div class="stat-value">0円</div>
-    <div class="stat-label">初期費用</div>
+
+  <div class="card">
+    <p class="card-title"><span class="term-link" onclick="showTerm('広告収入')">広告収入</span>の目安</p>
+    <div class="metric-grid">
+      <div class="metric-card"><p class="metric-label">1回再生あたり（少なめ）</p><p class="metric-val">0.3円</p></div>
+      <div class="metric-card"><p class="metric-label">1回再生あたり（平均）</p><p class="metric-val">0.5円</p></div>
+      <div class="metric-card"><p class="metric-label">1回再生あたり（多め）</p><p class="metric-val">0.8円</p></div>
+    </div>
+    <p style="font-size:12px; color:#aaa;">月10万回再生されると → 3〜8万円ほど入る計算です</p>
   </div>
 </div>
 
-<main>
+<!-- Phase 1 -->
+<div class="phase-panel" id="phase1">
+  <p class="section-title"><span class="term-link" onclick="showTerm('ジャンル')">ジャンル</span>選定チェッカー</p>
+  <p class="section-sub">ジャンル選びを間違えると3ヶ月が無駄になります。必ず数字で確認してから決めましょう。</p>
 
-  <!-- PROGRESS -->
-  <div class="progress-section">
-    <div class="progress-header">
-      <span class="progress-title">🚀 あなたの進捗</span>
-      <span class="progress-count" id="progress-count">0 / 50 完了</span>
+  <div class="card">
+    <p class="card-title">ステップ1 — 調べたいジャンルを入力する</p>
+    <div class="field-row">
+      <input type="text" id="genreInput" placeholder="例：雑学、節約、歴史解説...">
+      <button class="btn btn-dark" onclick="runGenreCheck()">判定する</button>
     </div>
-    <div class="progress-bar">
-      <div class="progress-fill" id="progress-fill"></div>
-    </div>
+    <button class="btn btn-small" onclick="toggleSuggest()">📋 ジャンル候補を見る</button>
+    <div id="genreChips" class="genre-chips hidden"></div>
   </div>
 
-  <!-- STAGE 1 -->
-  <div class="stage open" data-stage="1">
-    <div class="stage-header" onclick="toggleStage(this.parentElement)">
-      <div class="stage-num" style="background:#e74c3c;">1</div>
-      <div class="stage-header-text">
-        <div class="stage-title">チャンネルコンセプト設計</div>
-        <div class="stage-subtitle">誰に・何を届けるか。ここがブレると全てがズレる</div>
-      </div>
-      <div class="stage-arrow">▼</div>
+  <div class="card">
+    <p class="card-title">ステップ2 — YouTubeで数字を調べて入力する</p>
+    <div class="how-box">
+      <p class="how-title">📖 調べ方（Mac・Chrome）</p>
+      <div class="how-step"><div class="how-num">1</div><p class="how-text">Chromeを開いて <span class="how-code">youtube.com</span> に行く</p></div>
+      <div class="how-step"><div class="how-num">2</div><p class="how-text">上部の検索窓に調べたいジャンル名を入力して Enter を押す</p></div>
+      <div class="how-step"><div class="how-num">3</div><p class="how-text">「フィルター」→「チャンネル」を選ぶ</p></div>
+      <div class="how-step"><div class="how-num">4</div><p class="how-text">上位に出てきたチャンネルを3〜5個クリックして開く</p></div>
+      <div class="how-step"><div class="how-num">5</div><p class="how-text">チャンネル名の下に表示されている「登録者数○万人」の数字を確認する</p></div>
+      <div class="how-step"><div class="how-num">6</div><p class="how-text">最新の動画をクリックして、タイトルの下に表示されている「再生数」を確認する</p></div>
     </div>
-    <div class="stage-body">
-      <div class="milestone">🏆 マイルストーン：チャンネルコンセプトシートを1枚完成させる</div>
-      <ul class="task-list">
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text"><span class="term" data-term="ニッチ">ニッチ</span>テーマを3〜5つ書き出し、競合チャンネルを10本ずつ視聴して需要を確認する</div>
-        </li>
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text">ターゲット視聴者（年齢・性別・悩み・欲求）を具体的な1人として設定する</div>
-        </li>
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text">自分の「強み・経験・知識」リストを作り、ニッチと掛け合わせてオリジナリティを作る</div>
-        </li>
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text">チャンネル名・概要欄・アイコンを決定してチャンネル開設する</div>
-        </li>
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text"><span class="term" data-term="チャンネルアート">チャンネルアート</span>（バナー）を作成しアップロードする（推奨: 2560×1440px）</div>
-        </li>
-      </ul>
-      <div class="tips-box">
-        <strong>💡 攻略ポイント</strong>
-        「料理チャンネル」より「一人暮らし社会人向け5分時短レシピ」のように絞るほど、初期の競合が減り登録者が付きやすい。最初の1年はニッチに徹すること。
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:0.75rem;">
+      <div class="field-group">
+        <span class="field-label">代表チャンネルの登録者数（人）</span>
+        <input type="number" id="subCount" placeholder="例: 50000">
+      </div>
+      <div class="field-group">
+        <span class="field-label">最新動画の再生数（回）</span>
+        <input type="number" id="viewCount" placeholder="例: 80000">
       </div>
     </div>
+
+    <div class="field-group">
+      <span class="field-label">直近3ヶ月の登録者増加数（人）</span>
+      <div class="how-box" style="margin-bottom:0.6rem;">
+        <p class="how-title">📖 <span class="term-link" onclick="showTerm('SocialBlade')">SocialBlade</span> での調べ方（Mac・Chrome）</p>
+        <div class="how-step"><div class="how-num">1</div><p class="how-text">Chromeで <span class="how-code">socialblade.com</span> を開く</p></div>
+        <div class="how-step"><div class="how-num">2</div><p class="how-text">右上の検索窓にチャンネル名を入力して Enter を押す</p></div>
+        <div class="how-step"><div class="how-num">3</div><p class="how-text">「YouTube」を選んで結果をクリックする</p></div>
+        <div class="how-step"><div class="how-num">4</div><p class="how-text">「Monthly Gains」の「Subscribers」の数字3ヶ月分を足して入力する</p></div>
+      </div>
+      <input type="number" id="growthCount" placeholder="例: 3000">
+    </div>
+    <div id="genreResult"></div>
   </div>
 
-  <!-- STAGE 2 -->
-  <div class="stage" data-stage="2">
-    <div class="stage-header" onclick="toggleStage(this.parentElement)">
-      <div class="stage-num" style="background:#e67e22;">2</div>
-      <div class="stage-header-text">
-        <div class="stage-title">顔出しなし動画フォーマット決定</div>
-        <div class="stage-subtitle">自分に合った制作スタイルを最初に固める</div>
-      </div>
-      <div class="stage-arrow">▼</div>
+  <div class="card">
+    <p class="card-title">ステップ3 — 複数のジャンルを比べる</p>
+    <p style="font-size:12px; color:#aaa; margin-bottom:0.75rem;">最低3〜5ジャンル調べて比較してから決めましょう</p>
+    <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:0.75rem;">
+      <input type="text" id="cmpGenre" placeholder="ジャンル名" style="flex:1; min-width:100px;">
+      <input type="number" id="cmpGrowth" placeholder="3ヶ月増加数" style="width:130px;">
+      <input type="number" id="cmpRatio" placeholder="再生÷登録者" style="width:130px;">
+      <button class="btn" onclick="addCompare()">追加</button>
     </div>
-    <div class="stage-body">
-      <div class="milestone">🏆 マイルストーン：動画フォーマットを1つ選びテスト動画を作る</div>
-      <ul class="task-list">
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text"><span class="term" data-term="スクリーンキャスト">スクリーンキャスト</span>型（PC画面録画+ナレーション）向きか確認する — 解説・ツール系に最適</div>
-        </li>
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text">アニメーション・図解型（PowerPoint/Canvaスライド+ナレーション）の実現可能性を検討する</div>
-        </li>
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text"><span class="term" data-term="ボイスオーバー">ボイスオーバー</span>か<span class="term" data-term="VOICEVOX">VOICEVOX</span>等のAI音声かを決定する</div>
-        </li>
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text">動画の平均尺を決める（8〜15分が収益化効率と視聴維持のバランスが良い）</div>
-        </li>
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text">競合チャンネルのフォーマットを研究し、自分流にアレンジした「型」を文書化する</div>
-        </li>
-      </ul>
-      <div class="tips-box">
-        <strong>💡 顔出しなしの4大フォーマット</strong>
-        ①スクリーンキャスト ②スライド解説 ③手元・物撮り ④AIキャラクター+ナレーション。最初は1つに絞り、慣れたら組み合わせを試す。
-      </div>
+    <table class="cmp-table">
+      <thead><tr><th>ジャンル</th><th>3ヶ月増加</th><th>再生÷登録者</th><th>判定</th><th></th></tr></thead>
+      <tbody id="cmpBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Phase 2 -->
+<div class="phase-panel" id="phase2">
+  <p class="section-title"><span class="term-link" onclick="showTerm('企画')">企画</span>の当たり判定</p>
+  <p class="section-sub">参考にする動画が「ファンで再生されているか」「企画の力で伸びているか」を調べます。登録者数の3倍以上の再生数があれば企画力で伸びています。</p>
+
+  <div class="card">
+    <p class="card-title">当たり企画を見分ける</p>
+    <div class="field-group">
+      <span class="field-label">参考チャンネルの<span class="term-link" onclick="showTerm('チャンネル登録者数')">登録者数</span></span>
+      <input type="number" id="planSub" placeholder="例: 10000">
     </div>
+    <div class="field-group">
+      <span class="field-label">その動画の<span class="term-link" onclick="showTerm('再生数')">再生数</span></span>
+      <input type="number" id="planView" placeholder="例: 45000">
+    </div>
+    <button class="btn btn-dark" onclick="runPlanCheck()">判定する</button>
+    <div id="planResult"></div>
   </div>
 
-  <!-- STAGE 3 -->
-  <div class="stage" data-stage="3">
-    <div class="stage-header" onclick="toggleStage(this.parentElement)">
-      <div class="stage-num" style="background:#d4ac0d;">3</div>
-      <div class="stage-header-text">
-        <div class="stage-title">機材・ソフトウェア環境構築</div>
-        <div class="stage-subtitle">0円でもスタートできる。まず揃えるべき優先順位を知る</div>
-      </div>
-      <div class="stage-arrow">▼</div>
+  <div class="card">
+    <p class="card-title">AI<span class="term-link" onclick="showTerm('台本')">台本</span>生成プロンプトテンプレ</p>
+    <p style="font-size:12px; color:#aaa; margin-bottom:0.6rem;">Claude.aiまたはChatGPTにそのままコピペして使います</p>
+    <div style="background:#f5f5f0; border-radius:10px; padding:0.9rem; font-size:13px; color:#444; line-height:1.8; font-family:monospace; white-space:pre-wrap;">あなたはYouTubeの台本ライターです。
+ジャンル：[ジャンル名を入力]
+テーマ：[動画のテーマを入力]
+ターゲット：[誰に向けた動画か]
+動画の長さ：[何分の動画か]
+条件：顔出しなし・ナレーション形式
+　　　最初の30秒で視聴者を引き込む
+　　　最後まで見たくなる構成
+上記の条件で台本を作成してください。</div>
+    <button class="btn btn-small" style="margin-top:0.6rem;" onclick="copyTemplate()">📋 コピーする</button>
+    <span id="copyDone" style="font-size:12px; color:#2a6e2a; margin-left:8px; display:none;">コピーしました！</span>
+  </div>
+</div>
+
+<!-- Phase 3 -->
+<div class="phase-panel" id="phase3">
+  <p class="section-title">動画制作チェックリスト</p>
+  <p class="section-sub">「最後まで見てもらえる動画」を作ることだけを考えます。画質や凝った編集は不要です。</p>
+  <div class="card">
+    <div id="checklistWrap"></div>
+    <div class="progress-wrap"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <p class="progress-label" id="progressLabel">0 / 0 完了</p>
+  </div>
+  <div class="card">
+    <p class="card-title">使えるツール（すべて無料・Mac対応）</p>
+    <div class="step-row"><div class="step-num">AI</div><div><p class="step-text">Claude.ai / ChatGPT</p><p class="step-sub"><span class="term-link" onclick="showTerm('台本')">台本</span>・タイトル・<span class="term-link" onclick="showTerm('サムネイル')">サムネイル</span>の文章を作ってくれる</p></div></div>
+    <div class="step-row"><div class="step-num">声</div><div><p class="step-text"><span class="term-link" onclick="showTerm('VOICEVOX')">VOICEVOX</span>（無料）</p><p class="step-sub">文章を入力するとAIが声で読み上げてくれる。顔も声も不要になる</p></div></div>
+    <div class="step-row"><div class="step-num">編集</div><div><p class="step-text">CapCut / Canva（無料）</p><p class="step-sub">動画の編集・テロップの追加。Macで使えます</p></div></div>
+    <div class="step-row"><div class="step-num">素材</div><div><p class="step-text">Pixabay / Pexels（無料）</p><p class="step-sub">動画に使える無料の映像・画像素材。商用利用OK</p></div></div>
+  </div>
+</div>
+
+<!-- Phase 4 -->
+<div class="phase-panel" id="phase4">
+  <p class="section-title">収益化の進捗を確認する</p>
+  <p class="section-sub">目標：3ヶ月以内に<span class="term-link" onclick="showTerm('チャンネル登録者数')">チャンネル登録者数</span>1,000人・<span class="term-link" onclick="showTerm('総再生時間')">総再生時間</span>4,000時間を達成する。</p>
+
+  <div class="card">
+    <p class="card-title">今の状況を入力する</p>
+    <div class="how-box" style="margin-bottom:0.75rem;">
+      <p class="how-title">📖 数字の確認方法（Mac・Chrome）</p>
+      <div class="how-step"><div class="how-num">1</div><p class="how-text">Chromeで <span class="how-code">studio.youtube.com</span> を開く</p></div>
+      <div class="how-step"><div class="how-num">2</div><p class="how-text">左メニューの「アナリティクス」をクリックする</p></div>
+      <div class="how-step"><div class="how-num">3</div><p class="how-text">登録者数・総再生時間・動画本数が表示されます</p></div>
     </div>
-    <div class="stage-body">
-      <div class="milestone">🏆 マイルストーン：録画〜書き出しまでの一連フローを完走する</div>
-      <ul class="task-list">
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text">録画ソフトを導入する（<span class="term" data-term="OBS">OBS Studio</span>は無料・高機能でおすすめ）</div>
-        </li>
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text">動画編集ソフトを選ぶ（DaVinci Resolve無料版 / CapCut / iMovieで十分）</div>
-        </li>
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text">マイクを用意する（予算がなければスマホイヤホンでもOK。3,000円以上のコンデンサーマイクが推奨）</div>
-        </li>
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text"><span class="term" data-term="サムネイル">サムネイル</span>作成環境を整える（Canva無料版で十分スタート可能）</div>
-        </li>
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text">フリー素材・BGMサイトを3つ以上ブックマークする（甘茶の音楽工房・Pixabay等）</div>
-        </li>
-      </ul>
-      <div class="tool-grid">
-        <div class="tool-card">
-          <div class="tool-name">OBS Studio</div>
-          <div class="tool-note">画面録画・配信</div>
-          <div class="tool-free">無料</div>
-        </div>
-        <div class="tool-card">
-          <div class="tool-name">DaVinci Resolve</div>
-          <div class="tool-note">動画編集</div>
-          <div class="tool-free">無料</div>
-        </div>
-        <div class="tool-card">
-          <div class="tool-name">Canva</div>
-          <div class="tool-note">サムネイル制作</div>
-          <div class="tool-free">無料</div>
-        </div>
-        <div class="tool-card">
-          <div class="tool-name">VOICEVOX</div>
-          <div class="tool-note">AI音声合成</div>
-          <div class="tool-free">無料</div>
-        </div>
-        <div class="tool-card">
-          <div class="tool-name">TubeBuddy</div>
-          <div class="tool-note">SEO分析</div>
-          <div class="tool-free">無料あり</div>
-        </div>
-        <div class="tool-card">
-          <div class="tool-name">vidIQ</div>
-          <div class="tool-note">競合分析</div>
-          <div class="tool-free">無料あり</div>
-        </div>
-      </div>
+    <div class="metric-grid">
+      <div class="metric-card"><p class="metric-label">現在の登録者数</p><input type="number" id="curSub" placeholder="0" style="width:100%; font-size:18px; font-weight:500; text-align:center; border:none; background:transparent;" oninput="updateMonetize()"></div>
+      <div class="metric-card"><p class="metric-label">総再生時間（時間）</p><input type="number" id="curHour" placeholder="0" style="width:100%; font-size:18px; font-weight:500; text-align:center; border:none; background:transparent;" oninput="updateMonetize()"></div>
+      <div class="metric-card"><p class="metric-label">投稿本数</p><input type="number" id="curVid" placeholder="0" style="width:100%; font-size:18px; font-weight:500; text-align:center; border:none; background:transparent;" oninput="updateMonetize()"></div>
     </div>
+    <div id="monetizeResult"></div>
   </div>
 
-  <!-- STAGE 4 -->
-  <div class="stage" data-stage="4">
-    <div class="stage-header" onclick="toggleStage(this.parentElement)">
-      <div class="stage-num" style="background:#27ae60;">4</div>
-      <div class="stage-header-text">
-        <div class="stage-title">最初の10本制作・投稿</div>
-        <div class="stage-subtitle">クオリティより量。最初の10本は練習と割り切る</div>
-      </div>
-      <div class="stage-arrow">▼</div>
+  <div class="card">
+    <p class="card-title">月収シミュレーター</p>
+    <div class="field-group">
+      <span class="field-label">月間の合計<span class="term-link" onclick="showTerm('再生数')">再生数</span>（回）</span>
+      <input type="number" id="simView" placeholder="例: 100000" oninput="calcRevenue()">
     </div>
-    <div class="stage-body">
-      <div class="milestone">🏆 マイルストーン：10本投稿・初めての100再生達成</div>
-      <ul class="task-list">
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text"><span class="term" data-term="キーワードリサーチ">キーワードリサーチ</span>で最初の10本タイトル候補を作る</div>
-        </li>
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text">台本は必ず書く。「フック（冒頭15秒）→本論→まとめ→CTA」の構成で統一する</div>
-        </li>
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text">毎動画に<span class="term" data-term="エンドスクリーン">エンドスクリーン</span>と<span class="term" data-term="カード">カード</span>を必ず設定する</div>
-        </li>
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text">説明欄にキーワードを含む300字以上の文章・タイムスタンプ・リンクを記載する</div>
-        </li>
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text">投稿後48時間はコメントを全件返信してエンゲージメントを上げる</div>
-        </li>
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text"><span class="term" data-term="再生リスト">再生リスト</span>を作り関連動画をまとめて視聴連鎖を作る</div>
-        </li>
-      </ul>
-      <div class="info-box">
-        <strong>📊 初期の重要指標</strong>
-        最初の目標は「<span class="term" data-term="CTR">CTR</span> 4%以上」と「<span class="term" data-term="AVD">AVD</span> 40%以上」の2つ。この2つが満たせれば<span class="term" data-term="アルゴリズム">アルゴリズム</span>がチャンネルを推薦し始める。
+    <div id="revenueResult"></div>
+  </div>
+</div>
+
+<!-- Phase 5 -->
+<div class="phase-panel" id="phase5">
+  <p class="section-title"><span class="term-link" onclick="showTerm('外注化')">外注化</span>・<span class="term-link" onclick="showTerm('仕組み化')">仕組み化</span>のロードマップ</p>
+  <p class="section-sub"><span class="term-link" onclick="showTerm('収益化')">収益化</span>できたら、その収益を使って少しずつ作業を他の人に任せていきます。</p>
+
+  <div class="card">
+    <p class="card-title">外注化のタイミングを確認する</p>
+    <div class="field-row">
+      <div class="field-group" style="flex:1; margin:0;">
+        <span class="field-label">月収（万円）</span>
+        <input type="number" id="outMonth" placeholder="例: 10" oninput="calcOutsource()">
+      </div>
+      <div class="field-group" style="flex:1; margin:0;">
+        <span class="field-label">1日の作業時間（時間）</span>
+        <input type="number" id="outHour" placeholder="例: 2" oninput="calcOutsource()">
       </div>
     </div>
+    <div id="outsourceResult"></div>
   </div>
 
-  <!-- STAGE 5 -->
-  <div class="stage" data-stage="5">
-    <div class="stage-header" onclick="toggleStage(this.parentElement)">
-      <div class="stage-num" style="background:#16a085;">5</div>
-      <div class="stage-header-text">
-        <div class="stage-title">SEO・サムネイル最適化</div>
-        <div class="stage-subtitle">見つけてもらうための設計。無形の集客力を育てる</div>
+  <div class="card">
+    <p class="card-title">外注化の順番（この順番でやると失敗しにくい）</p>
+    <div class="step-row"><div class="step-num">1</div><div><p class="step-text">動画編集を外注する</p><p class="step-sub"><span class="term-link" onclick="showTerm('クラウドワークス')">クラウドワークス</span>・<span class="term-link" onclick="showTerm('ランサーズ')">ランサーズ</span>で1本2,000〜5,000円が相場です</p></div></div>
+    <div class="step-row"><div class="step-num">2</div><div><p class="step-text"><span class="term-link" onclick="showTerm('台本')">台本</span>作成をAIまたは外注する</p><p class="step-sub">AIで6〜7割作成 → 外注者が仕上げるやり方が効率的です</p></div></div>
+    <div class="step-row"><div class="step-num">3</div><div><p class="step-text"><span class="term-link" onclick="showTerm('ディレクター')">ディレクター</span>さんに任せる</p><p class="step-sub">月5〜15万円で1名雇用。週1回1時間の打ち合わせだけで回るようになります</p></div></div>
+    <div class="step-row"><div class="step-num">4</div><div><p class="step-text">チャンネル数を増やす</p><p class="step-sub">1チャンネルが安定したら同じ仕組みで2〜3チャンネル並行運営します</p></div></div>
+  </div>
+</div>
+
+<!-- Phase 6 -->
+<div class="phase-panel" id="phase6">
+  <p class="section-title"><span class="term-link" onclick="showTerm('売却')">売却</span>判断シミュレーター</p>
+  <p class="section-sub">売るべきか持ち続けるべきかを数字で判断します。月収の3倍以上の売却額なら売った方が得です。</p>
+
+  <div class="card">
+    <p class="card-title">チャンネルの状況を入力する</p>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:0.75rem;">
+      <div class="field-group" style="margin:0;">
+        <span class="field-label">月収（万円）</span>
+        <input type="number" id="sellMonth" placeholder="例: 10" oninput="calcSell()">
       </div>
-      <div class="stage-arrow">▼</div>
-    </div>
-    <div class="stage-body">
-      <div class="milestone">🏆 マイルストーン：1本の動画が検索1位に入る</div>
-      <ul class="task-list">
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text"><span class="term" data-term="ロングテールキーワード">ロングテールキーワード</span>を月30個以上リストアップしコンテンツカレンダーを作る</div>
-        </li>
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text">タイトルは「30文字以内で検索キーワード+感情的フック」の型を使う</div>
-        </li>
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text"><span class="term" data-term="サムネイル">サムネイル</span>のA/Bテストを実施し<span class="term" data-term="CTR">CTR</span>を比較する（YouTube Studioのインプレッション比較機能使用）</div>
-        </li>
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text">過去動画の説明文・<span class="term" data-term="タグ">タグ</span>を見直し、上位表示できていない動画を最適化リライトする</div>
-        </li>
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text">YouTube Studioの「視聴者リサーチ」「検索キーワード」タブを毎週確認する</div>
-        </li>
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text"><span class="term" data-term="視聴維持率">視聴維持率</span>グラフを確認し、離脱が多いシーンを次の動画で改善する</div>
-        </li>
-      </ul>
-      <div class="tips-box">
-        <strong>💡 サムネイル黄金則</strong>
-        「大きな文字（2〜5文字）・強い感情表現・視線を引く色（赤・黄・青）」の組み合わせ。顔出しなしの場合はキャラクターや矢印・図解で視覚的インパクトを作る。
+      <div class="field-group" style="margin:0;">
+        <span class="field-label">1日の作業時間（時間）</span>
+        <input type="number" id="sellHour" placeholder="例: 2" oninput="calcSell()">
       </div>
     </div>
+    <div class="field-group">
+      <span class="field-label">売却のオファー額（万円）※わからなければ空欄でOK</span>
+      <input type="number" id="sellOffer" placeholder="例: 100" oninput="calcSell()">
+    </div>
+    <div id="sellResult"></div>
   </div>
 
-  <!-- STAGE 6 -->
-  <div class="stage" data-stage="6">
-    <div class="stage-header" onclick="toggleStage(this.parentElement)">
-      <div class="stage-num" style="background:#2980b9;">6</div>
-      <div class="stage-header-text">
-        <div class="stage-title">YPP申請・収益化審査通過</div>
-        <div class="stage-subtitle">登録者1,000人・4,000時間の最短攻略法</div>
-      </div>
-      <div class="stage-arrow">▼</div>
-    </div>
-    <div class="stage-body">
-      <div class="milestone">🏆 マイルストーン：YPP審査通過・初めての広告収益を確認</div>
-      <ul class="task-list">
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text"><span class="term" data-term="収益化しきい値">収益化しきい値</span>の進捗をYouTube Studioの「収益化」タブで毎週確認する</div>
-        </li>
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text"><span class="term" data-term="ショート動画">ショート動画</span>を週2〜3本投稿してインプレッション数を急増させる</div>
-        </li>
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text">再生時間が長い「まとめ・解説シリーズ」を<span class="term" data-term="再生リスト">再生リスト</span>化し4,000時間を効率的に積み上げる</div>
-        </li>
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text"><span class="term" data-term="AdSense">AdSense</span>アカウントを事前に作成・本人確認を完了させておく</div>
-        </li>
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text"><span class="term" data-term="YPP">YPP</span>申請後の審査期間中（最大1ヶ月）も投稿を止めない</div>
-        </li>
-      </ul>
-      <div class="info-box">
-        <strong>📊 最速ルート戦略</strong>
-        ショート動画でチャンネル認知→10分超の長尺動画で再生時間を稼ぐ、2本柱戦略が最速。ショートは<span class="term" data-term="バイラル">バイラル</span>しやすく、長尺は<span class="term" data-term="AVD">AVD</span>で4,000時間ゲージを効率的に埋める。
-      </div>
-    </div>
+  <div class="card">
+    <p class="card-title">売却できるサービス</p>
+    <div class="step-row"><div class="step-num">1</div><div><p class="step-text"><span class="term-link" onclick="showTerm('ラッコM&A')">ラッコM&A</span></p><p class="step-sub">日本最大級。無料で掲載できます（rakko-ma.jp）</p></div></div>
+    <div class="step-row"><div class="step-num">2</div><div><p class="step-text">サイトM&A（GMO）</p><p class="step-sub">大手で信頼性が高い。成功したときだけ手数料がかかります</p></div></div>
+    <div class="step-row"><div class="step-num">3</div><div><p class="step-text">コミュニティ内での直接売買</p><p class="step-sub">手数料なし。YouTubeビジネス系のコミュニティで買い手を探します</p></div></div>
   </div>
+</div>
 
-  <!-- STAGE 7 -->
-  <div class="stage" data-stage="7">
-    <div class="stage-header" onclick="toggleStage(this.parentElement)">
-      <div class="stage-num" style="background:#7d3c98;">7</div>
-      <div class="stage-header-text">
-        <div class="stage-title">広告収益最大化</div>
-        <div class="stage-subtitle">同じ再生数でも単価設計で収益は3〜5倍変わる</div>
-      </div>
-      <div class="stage-arrow">▼</div>
-    </div>
-    <div class="stage-body">
-      <div class="milestone">🏆 マイルストーン：月収3万円突破</div>
-      <ul class="task-list">
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text"><span class="term" data-term="CPM">CPM</span>が高いジャンル（ビジネス・金融・IT・不動産）にコンテンツを寄せていく戦略を立てる</div>
-        </li>
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text"><span class="term" data-term="RPM">RPM</span>をYouTube Studioで確認し、低いジャンルの動画を高CPMジャンルへ誘導する</div>
-        </li>
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text">動画に<span class="term" data-term="アフィリエイト">アフィリエイト</span>リンク（Amazon/楽天/A8.net）を設置し広告収益以外の収入柱を作る</div>
-        </li>
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text">メンバーシップ・スーパーサンクスを設定しコアファンからの直接支援を受ける仕組みを作る</div>
-        </li>
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text">年末（10〜12月）は広告単価が上がるため、この時期に向けて高品質な動画を仕込む</div>
-        </li>
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text"><span class="term" data-term="エンゲージメント">エンゲージメント</span>率を上げ、スポンサーシップ案件（1本3〜30万円）を受注できる体制を作る</div>
-        </li>
-      </ul>
-      <div class="tips-box">
-        <strong>💡 収益計算の目安</strong>
-        月10万PV × RPM ¥200 = 月収 ¥20,000。RPMを¥500に上げると同じ再生数で¥50,000。ジャンル選定だけで収益が2.5倍変わる。
-      </div>
-    </div>
+<!-- Phase 7 -->
+<div class="phase-panel" id="phase7">
+  <p class="section-title">自分について（ブレインダンプ）</p>
+  <p class="section-sub">ジャンルを選ぶときにここを参照します。思い出したら随時追加してください。</p>
+
+  <div class="card">
+    <p class="card-title">経験・実績</p>
+    <div class="profile-tags" id="expTags"></div>
+    <div class="field-group"><textarea id="expText" placeholder="追加したい経験や実績を入力..."></textarea></div>
+    <button class="btn btn-dark btn-small" onclick="saveProfile('exp')">追加する</button>
   </div>
-
-  <!-- STAGE 8 -->
-  <div class="stage" data-stage="8">
-    <div class="stage-header" onclick="toggleStage(this.parentElement)">
-      <div class="stage-num" style="background:#c0392b;">8</div>
-      <div class="stage-header-text">
-        <div class="stage-title">チャンネル拡大・自動化・スケール</div>
-        <div class="stage-subtitle">月収5万円超えからの次ステージ設計</div>
-      </div>
-      <div class="stage-arrow">▼</div>
-    </div>
-    <div class="stage-body">
-      <div class="milestone">🏆 マイルストーン：月収5万円安定・外注化スタート</div>
-      <ul class="task-list">
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text">リサーチ・台本・編集の各工程を分解し、外注できる部分をランサーズ/クラウドワークスで募集する</div>
-        </li>
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text">過去のヒット動画を分析し「勝ちパターン」を型化してセカンドチャンネルに横展開する</div>
-        </li>
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text"><span class="term" data-term="インフルエンサー">コラボ戦略</span>を実行し、同規模チャンネルと相互紹介で登録者を加速させる</div>
-        </li>
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text">メールリスト・LINEオープンチャット・Discordを作りYouTube外でもファンと繋がれる基盤を作る</div>
-        </li>
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text">自分のデジタル商品（ノウハウ電子書籍・テンプレ・オンライン講座）を作り月収の天井を撤廃する</div>
-        </li>
-        <li class="task-item" onclick="toggleTask(this)">
-          <div class="task-checkbox"></div>
-          <div class="task-text">年間計画・四半期KPIを設定し、収益・登録者・再生時間の成長率を定期レビューする</div>
-        </li>
-      </ul>
-      <div class="info-box">
-        <strong>📊 収益の多角化ロードマップ</strong>
-        広告収益（基盤）→<span class="term" data-term="アフィリエイト">アフィリエイト</span>（+30%）→スポンサーシップ（+50%）→自社商品（天井なし）の順で構築するのが最も安定したルート。
-      </div>
-    </div>
+  <div class="card">
+    <p class="card-title">興味・好きなこと</p>
+    <div class="profile-tags" id="intTags"></div>
+    <div class="field-group"><textarea id="intText" placeholder="追加したい興味や好きなことを入力..."></textarea></div>
+    <button class="btn btn-dark btn-small" onclick="saveProfile('int')">追加する</button>
   </div>
+  <div class="card">
+    <p class="card-title">絶対やりたくないこと</p>
+    <div class="profile-tags" id="ngTags"></div>
+    <div class="field-group"><textarea id="ngText" placeholder="追加したくないことを入力..."></textarea></div>
+    <button class="btn btn-dark btn-small" onclick="saveProfile('ng')">追加する</button>
+  </div>
+</div>
 
-</main>
+</div><!-- /wrap -->
 
-<footer>
-  <p><a href="glossary.html">📖 用語集を見る</a> &nbsp;|&nbsp; 顔出しなしYouTube 自力攻略ロードマップ &nbsp;|&nbsp; <a href="index.html">ロードマップに戻る</a></p>
-  <p style="margin-top:8px;">用語（赤いラベル）をクリックすると詳細説明が表示されます</p>
-</footer>
+<!-- 用語ポップアップ -->
+<div class="popup-overlay" id="termOverlay" onclick="closePopup(event)">
+  <div class="popup-box">
+    <span class="popup-close" onclick="closeTermPopup()">✕</span>
+    <p class="popup-name" id="popupName"></p>
+    <p class="popup-reading" id="popupReading"></p>
+    <p class="popup-simple" id="popupSimple"></p>
+    <p class="popup-detail" id="popupDetail"></p>
+    <a class="popup-link" id="popupGlossaryLink" href="#">📖 用語集でもっと見る →</a>
+  </div>
+</div>
 
 <script>
-  function toggleStage(el) {
-    el.classList.toggle("open");
+const GENRES = ["雑学・豆知識","都市伝説・ミステリー","歴史解説","お金・節約・副業","健康・医療・予防","物語・朗読","スピリチュアル・占い","AI・テクノロジー解説","料理レシピ解説","英語学習","ビジネス書要約","心理学・人間関係","怖い話・ホラー","動物・自然","宇宙・科学","ダイエット・美容","子育て・育児","哲学・思想","ニュース・時事解説","防災・サバイバル","投資・資産運用","法律・生活の知識","映画・アニメ考察","偉人・歴史人物","食・栄養の知識"];
+
+const CHECKLIST_ITEMS = [
+  {text:"ジャンルを確定した", sub:""},
+  {text:"参考チャンネルを5つリストアップした", sub:""},
+  {text:"当たり企画を3つ以上選んだ", sub:"再生数÷登録者数が3倍以上のもの"},
+  {text:"AI（Claude/ChatGPT）で台本を生成した", sub:""},
+  {text:"台本を読んで気になる部分を修正した", sub:""},
+  {text:"VOICEVOXでナレーション（声）を作った", sub:"テキストを貼り付けると自動で声になります"},
+  {text:"Pixabayなどで映像・画像素材を集めた", sub:""},
+  {text:"CapCutまたはCanvaで動画を編集した", sub:""},
+  {text:"サムネイル（動画の表紙）を作った", sub:""},
+  {text:"タイトルを3パターン作って一番いいものを選んだ", sub:""},
+  {text:"YouTubeに投稿した", sub:""},
+  {text:"投稿後48時間で再生数・クリック率を確認した", sub:"YouTube Studioのアナリティクスで確認できます"}
+];
+
+const PROFILE_DEFAULT = {
+  exp: ["物販ビジネスの実務経験","Kindle出版10冊（失敗含む）","Claude CodeでAI自動化エージェント自作","フェンシング（県代表・国体出場）","お菓子・製菓専門学校","空手（家族で取り組み）","3人の子育て（年子）","パワハラ・うつ病からの回復","SNS運営（X・Threads・LINE）","大阪文化・紅茶専門店でのアルバイト"],
+  int: ["食・お菓子作り","AI・自動化","副業・マネタイズ","武道・精神修養","音楽（トランペット・バイオリン）","子どもの教育","旅"],
+  ng: ["顔出し","俗人性に依存した発信","属人性が高いジャンル"]
+};
+
+let profileData = JSON.parse(localStorage.getItem('yt_profile') || 'null') || JSON.parse(JSON.stringify(PROFILE_DEFAULT));
+let checkState = JSON.parse(localStorage.getItem('yt_checks') || '{}');
+
+function showPhase(n) {
+  document.querySelectorAll('.phase-panel').forEach((p,i) => p.classList.toggle('active', i===n));
+  document.querySelectorAll('.phase-btn').forEach((b,i) => b.classList.toggle('active', i===n));
+  if(n===3) renderChecklist();
+  if(n===7) renderProfile();
+}
+
+function toggleSuggest() {
+  const el = document.getElementById('genreChips');
+  el.classList.toggle('hidden');
+  if(!el.classList.contains('hidden') && !el.innerHTML) {
+    el.innerHTML = GENRES.map(g => `<button class="genre-chip" onclick="selectGenre('${g}')">${g}</button>`).join('');
   }
+}
+function selectGenre(g) { document.getElementById('genreInput').value = g; document.getElementById('genreChips').classList.add('hidden'); }
 
-  const TOTAL_TASKS = document.querySelectorAll(".task-item").length;
-  document.getElementById("progress-count").textContent = `0 / ${TOTAL_TASKS} 完了`;
-
-  function toggleTask(el) {
-    el.classList.toggle("done");
-    saveProgress();
-    updateProgress();
+function runGenreCheck() {
+  const genre = document.getElementById('genreInput').value.trim();
+  const growth = parseInt(document.getElementById('growthCount').value)||0;
+  const subs = parseInt(document.getElementById('subCount').value)||0;
+  const views = parseInt(document.getElementById('viewCount').value)||0;
+  const el = document.getElementById('genreResult');
+  if(!genre){el.innerHTML='<div class="result-box result-check">ジャンル名を入力してください</div>';return;}
+  let msgs=[]; let score=0;
+  if(growth>0){
+    if(growth>=1000){msgs.push('✓ 直近3ヶ月の登録者増加数が1,000人以上 → 参入OK');score++;}
+    else{msgs.push('△ 直近3ヶ月の登録者増加数が1,000人未満 → まだ伸び中のジャンルかもしれません');}
   }
-
-  function updateProgress() {
-    const done = document.querySelectorAll(".task-item.done").length;
-    const pct = Math.round((done / TOTAL_TASKS) * 100);
-    document.getElementById("progress-fill").style.width = pct + "%";
-    document.getElementById("progress-count").textContent = `${done} / ${TOTAL_TASKS} 完了`;
+  if(subs>0&&views>0){
+    const r=(views/subs).toFixed(1);
+    if(views/subs>=3){msgs.push(`✓ 再生数が登録者数の${r}倍 → 企画の力で伸びています`);score++;}
+    else{msgs.push(`△ 再生数が登録者数の${r}倍 → ファンが見ているだけの可能性があります`);}
   }
+  const noData = growth===0&&subs===0&&views===0;
+  const cls=score>=2?'result-ok':score===1?'result-check':'result-ng';
+  const verdict=noData?`「${genre}」`:score>=2?`「${genre}」参入OK`:score===1?`「${genre}」要追加調査`:  `「${genre}」参入注意`;
+  el.innerHTML=`<div class="result-box ${cls}"><strong>${verdict}</strong>${msgs.length?'<br>'+msgs.join('<br>'):''}${noData?'<br>上の数字を入力すると詳しく判定できます':''}</div>`;
+}
 
-  function saveProgress() {
-    const state = [];
-    document.querySelectorAll(".task-item").forEach((el, i) => {
-      state.push(el.classList.contains("done") ? 1 : 0);
-    });
-    localStorage.setItem("yt-roadmap-progress", JSON.stringify(state));
+function addCompare() {
+  const g=document.getElementById('cmpGenre').value.trim();
+  const gr=parseInt(document.getElementById('cmpGrowth').value)||0;
+  const ra=parseFloat(document.getElementById('cmpRatio').value)||0;
+  if(!g) return;
+  const ok=gr>=1000&&ra>=3;
+  const chk=gr>=1000||ra>=3;
+  const badge=ok?'<span style="color:#2a6e2a">◎ OK</span>':chk?'<span style="color:#7a5c00">△ 要検討</span>':'<span style="color:#8b2020">✕ NG</span>';
+  const id=Date.now();
+  const tr=document.createElement('tr');
+  tr.id='cr'+id;
+  tr.innerHTML=`<td>${g}</td><td>${gr.toLocaleString()}人</td><td>${ra.toFixed(1)}倍</td><td>${badge}</td><td><button style="font-size:11px;padding:2px 8px;border:1px solid #eee;border-radius:6px;background:transparent;color:#aaa;cursor:pointer;" onclick="document.getElementById('cr${id}').remove()">削除</button></td>`;
+  document.getElementById('cmpBody').appendChild(tr);
+  document.getElementById('cmpGenre').value='';
+  document.getElementById('cmpGrowth').value='';
+  document.getElementById('cmpRatio').value='';
+}
+
+function runPlanCheck() {
+  const sub=parseInt(document.getElementById('planSub').value)||0;
+  const view=parseInt(document.getElementById('planView').value)||0;
+  const el=document.getElementById('planResult');
+  if(!sub||!view){el.innerHTML='<div class="result-box result-check">2つの数字を入力してください</div>';return;}
+  const r=(view/sub).toFixed(1);
+  if(view/sub>=3){el.innerHTML=`<div class="result-box result-ok">◎ 当たり企画の可能性が高いです（登録者の${r}倍の再生数）<br>企画の力で伸びている動画です。参考にする価値があります。</div>`;}
+  else{el.innerHTML=`<div class="result-box result-check">△ ファンが見ている可能性があります（登録者の${r}倍の再生数）<br>登録者の3倍未満です。このチャンネルの別の動画も確認してみましょう。</div>`;}
+}
+
+function copyTemplate() {
+  const t=`あなたはYouTubeの台本ライターです。\nジャンル：[ジャンル名を入力]\nテーマ：[動画のテーマを入力]\nターゲット：[誰に向けた動画か]\n動画の長さ：[何分の動画か]\n条件：顔出しなし・ナレーション形式\n　　　最初の30秒で視聴者を引き込む\n　　　最後まで見たくなる構成\n上記の条件で台本を作成してください。`;
+  navigator.clipboard.writeText(t).then(()=>{
+    const el=document.getElementById('copyDone');
+    el.style.display='inline';
+    setTimeout(()=>el.style.display='none',2000);
+  });
+}
+
+function renderChecklist() {
+  const wrap=document.getElementById('checklistWrap');
+  wrap.innerHTML=CHECKLIST_ITEMS.map((item,i)=>{
+    const done=checkState[i]||false;
+    return `<div class="check-item${done?' done':''}" id="ci${i}">
+      <input type="checkbox" id="chk${i}" ${done?'checked':''} onchange="toggleCheck(${i})">
+      <label for="chk${i}">${item.text}${item.sub?`<br><span style="font-size:12px;color:#aaa;">${item.sub}</span>`:''}</label>
+    </div>`;
+  }).join('');
+  updateProgress();
+}
+
+function toggleCheck(i) {
+  checkState[i]=document.getElementById('chk'+i).checked;
+  localStorage.setItem('yt_checks',JSON.stringify(checkState));
+  document.getElementById('ci'+i).classList.toggle('done',checkState[i]);
+  updateProgress();
+}
+
+function updateProgress() {
+  const done=Object.values(checkState).filter(Boolean).length;
+  const total=CHECKLIST_ITEMS.length;
+  document.getElementById('progressFill').style.width=Math.round(done/total*100)+'%';
+  document.getElementById('progressLabel').textContent=`${done} / ${total} 完了`;
+}
+
+function updateMonetize() {
+  const sub=parseInt(document.getElementById('curSub').value)||0;
+  const hour=parseInt(document.getElementById('curHour').value)||0;
+  const el=document.getElementById('monetizeResult');
+  const sp=Math.min(Math.round(sub/1000*100),100);
+  const hp=Math.min(Math.round(hour/4000*100),100);
+  if(sub>=1000&&hour>=4000){
+    el.innerHTML='<div class="result-box result-ok">✓ 収益化の条件を満たしています！<br>YouTube Studioから「収益化」を申請できます。</div>';
+  } else {
+    el.innerHTML=`<div class="result-box result-info">登録者：${sub.toLocaleString()}人（目標の${sp}%）<br>総再生時間：${hour.toLocaleString()}時間（目標の${hp}%）</div>`;
   }
+}
 
-  function loadProgress() {
-    const raw = localStorage.getItem("yt-roadmap-progress");
-    if (!raw) return;
-    const state = JSON.parse(raw);
-    document.querySelectorAll(".task-item").forEach((el, i) => {
-      if (state[i]) el.classList.add("done");
-    });
-    updateProgress();
+function calcRevenue() {
+  const v=parseInt(document.getElementById('simView').value)||0;
+  if(!v) return;
+  const lo=Math.round(v*0.3/10000);
+  const mi=Math.round(v*0.5/10000);
+  const hi=Math.round(v*0.8/10000);
+  document.getElementById('revenueResult').innerHTML=`<div class="sim-box">
+    <div class="sim-row"><span>少なめの場合（0.3円/回）</span><span class="sim-val">月 ${lo}万円</span></div>
+    <div class="sim-row"><span>平均的な場合（0.5円/回）</span><span class="sim-val">月 ${mi}万円</span></div>
+    <div class="sim-row"><span>多めの場合（0.8円/回）</span><span class="sim-val">月 ${hi}万円</span></div>
+  </div>`;
+}
+
+function calcOutsource() {
+  const m=parseInt(document.getElementById('outMonth').value)||0;
+  const h=parseFloat(document.getElementById('outHour').value)||0;
+  if(!m||!h) return;
+  const hourly=Math.round(m*10000/30/h);
+  const msg=m>=5?'<div class="result-box result-ok">外注化を始める目安に達しています。まず動画編集から外注しましょう。</div>':
+    `<div class="result-box result-check">月${m}万円はまだ外注化を始めるには早いかもしれません。まず収益を増やすことに集中しましょう。</div>`;
+  document.getElementById('outsourceResult').innerHTML=`<div class="sim-box" style="margin-bottom:0.5rem;"><div class="sim-row"><span>今の時給換算</span><span class="sim-val">${hourly.toLocaleString()}円/時間</span></div></div>${msg}`;
+}
+
+function calcSell() {
+  const m=parseInt(document.getElementById('sellMonth').value)||0;
+  const h=parseFloat(document.getElementById('sellHour').value)||0;
+  const offer=parseInt(document.getElementById('sellOffer').value)||0;
+  const el=document.getElementById('sellResult');
+  if(!m){el.innerHTML='';return;}
+  const min3=m*3; const fair=m*12; const good=m*24;
+  let html=`<div class="sim-box" style="margin-bottom:0.5rem;">
+    <div class="sim-row"><span>最低ライン（月収×3倍）</span><span class="sim-val">${min3}万円</span></div>
+    <div class="sim-row"><span>適正価格（月収×12倍）</span><span class="sim-val">${fair}万円</span></div>
+    <div class="sim-row"><span>好条件（月収×24倍）</span><span class="sim-val">${good}万円</span></div>
+  </div>`;
+  if(offer>0){
+    if(offer>=good){html+='<div class="result-box result-ok">◎ とても好条件のオファーです。売ることをおすすめします。<br>売却後に同じチャンネルをまた作れば効率が大幅に上がります。</div>';}
+    else if(offer>=fair){html+='<div class="result-box result-ok">◎ 適正価格のオファーです。売って次のチャンネルへ進みましょう。</div>';}
+    else if(offer>=min3){html+='<div class="result-box result-check">△ 月収の3倍は超えていますが低めです。作業時間と相談して判断してください。</div>';}
+    else{html+=`<div class="result-box result-ng">✕ 月収の3倍（${min3}万円）未満のオファーは売らない方がいいです。</div>`;}
   }
+  el.innerHTML=html;
+}
 
-  loadProgress();
+function renderProfile() {
+  ['exp','int','ng'].forEach(k=>{
+    const tags=profileData[k]||[];
+    document.getElementById(k+'Tags').innerHTML=tags.map((t,i)=>`<span class="profile-tag">${t}<span class="tag-del" onclick="removeTag('${k}',${i})">×</span></span>`).join('');
+  });
+}
+
+function saveProfile(k) {
+  const val=document.getElementById(k+'Text').value.trim();
+  if(!val) return;
+  if(!profileData[k]) profileData[k]=[];
+  profileData[k].push(val);
+  document.getElementById(k+'Text').value='';
+  localStorage.setItem('yt_profile',JSON.stringify(profileData));
+  renderProfile();
+}
+
+function removeTag(k,i) {
+  profileData[k].splice(i,1);
+  localStorage.setItem('yt_profile',JSON.stringify(profileData));
+  renderProfile();
+}
+
+function showTerm(name) {
+  const t=GLOSSARY[name];
+  if(!t) return;
+  document.getElementById('popupName').textContent=name;
+  document.getElementById('popupReading').textContent='読み方：'+t.reading;
+  document.getElementById('popupSimple').textContent='→ '+t.simple;
+  document.getElementById('popupDetail').textContent=t.detail;
+  document.getElementById('popupGlossaryLink').href='glossary.html#'+encodeURIComponent(name);
+  document.getElementById('termOverlay').classList.add('show');
+}
+
+function closeTermPopup() { document.getElementById('termOverlay').classList.remove('show'); }
+function closePopup(e) { if(e.target===document.getElementById('termOverlay')) closeTermPopup(); }
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeTermPopup(); });
 </script>
+
 </body>
 </html>

@@ -1,410 +1,67 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>用語集 | 顔出しなしYouTube広告収入ロードマップ</title>
-  <script src="glossary.js"></script>
-  <style>
-    :root {
-      --red: #ff0000;
-      --red-dark: #cc0000;
-      --dark: #0f0f0f;
-      --gray: #606060;
-      --light-gray: #f9f9f9;
-      --border: #e0e0e0;
-      --white: #ffffff;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: "Hiragino Sans", "Noto Sans JP", "Yu Gothic", sans-serif;
-      background: var(--light-gray);
-      color: var(--dark);
-      line-height: 1.7;
-    }
-
-    header {
-      background: var(--dark);
-      color: white;
-      padding: 20px;
-      text-align: center;
-    }
-    header::before {
-      content: "";
-      position: fixed;
-    }
-    header h1 { font-size: clamp(1.2rem, 3vw, 1.7rem); font-weight: 900; }
-    header h1 span { color: var(--red); }
-    header p { font-size: 0.85rem; color: #aaa; margin-top: 6px; }
-    .header-nav {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-top: 14px;
-    }
-    .header-nav a {
-      color: #ccc;
-      text-decoration: none;
-      font-size: 0.85rem;
-      padding: 6px 16px;
-      border: 1px solid #444;
-      border-radius: 20px;
-      transition: all 0.2s;
-    }
-    .header-nav a:hover { background: var(--red); border-color: var(--red); color: white; }
-
-    main { max-width: 900px; margin: 0 auto; padding: 32px 16px 60px; }
-
-    /* SEARCH */
-    .search-wrap {
-      position: relative;
-      margin-bottom: 28px;
-    }
-    .search-icon {
-      position: absolute;
-      left: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--gray);
-      font-size: 1.1rem;
-    }
-    #search-input {
-      width: 100%;
-      padding: 12px 16px 12px 42px;
-      border: 2px solid var(--border);
-      border-radius: 10px;
-      font-size: 0.95rem;
-      background: white;
-      outline: none;
-      transition: border-color 0.2s;
-      font-family: inherit;
-    }
-    #search-input:focus { border-color: var(--red); }
-
-    /* CATEGORY FILTER */
-    .category-filter {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 24px;
-    }
-    .cat-btn {
-      padding: 5px 14px;
-      border-radius: 20px;
-      border: 1px solid var(--border);
-      background: white;
-      font-size: 0.82rem;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-family: inherit;
-    }
-    .cat-btn:hover, .cat-btn.active {
-      background: var(--red);
-      color: white;
-      border-color: var(--red);
-    }
-
-    /* STATS */
-    .glossary-stats {
-      font-size: 0.82rem;
-      color: var(--gray);
-      margin-bottom: 16px;
-    }
-    .glossary-stats strong { color: var(--red); }
-
-    /* CATEGORY SECTION */
-    .category-section { margin-bottom: 32px; }
-    .category-heading {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 14px;
-      padding-bottom: 8px;
-      border-bottom: 2px solid var(--border);
-    }
-    .category-heading h2 { font-size: 1rem; font-weight: 800; }
-    .category-badge {
-      background: var(--red);
-      color: white;
-      font-size: 0.72rem;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 20px;
-    }
-
-    /* TERM CARDS */
-    .term-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 12px;
-    }
-    .term-card {
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 16px;
-      cursor: pointer;
-      transition: all 0.2s;
-      position: relative;
-      overflow: hidden;
-    }
-    .term-card::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 3px;
-      height: 100%;
-      background: var(--red);
-      opacity: 0;
-      transition: opacity 0.2s;
-    }
-    .term-card:hover {
-      box-shadow: 0 4px 16px rgba(0,0,0,0.10);
-      transform: translateY(-2px);
-      border-color: #ffcccc;
-    }
-    .term-card:hover::before { opacity: 1; }
-    .term-card-name {
-      font-weight: 800;
-      font-size: 0.95rem;
-      color: var(--dark);
-      margin-bottom: 6px;
-    }
-    .term-card-preview {
-      font-size: 0.8rem;
-      color: var(--gray);
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-    .term-card-tag {
-      display: inline-block;
-      margin-top: 8px;
-      background: #fff0f0;
-      color: var(--red-dark);
-      border: 1px solid #ffcccc;
-      border-radius: 4px;
-      padding: 1px 8px;
-      font-size: 0.72rem;
-      font-weight: 600;
-    }
-    .click-hint {
-      position: absolute;
-      top: 14px;
-      right: 14px;
-      font-size: 0.7rem;
-      color: #ccc;
-    }
-
-    /* NO RESULTS */
-    .no-results {
-      text-align: center;
-      padding: 48px;
-      color: var(--gray);
-      display: none;
-    }
-    .no-results.visible { display: block; }
-
-    /* MODAL (reuse from main) */
-    #glossary-modal { display: none; }
-    #glossary-modal.active { display: block; }
-    #glossary-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.55);
-      z-index: 1000;
-      backdrop-filter: blur(2px);
-    }
-    #glossary-popup {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: white;
-      border-radius: 16px;
-      padding: 28px 28px 22px;
-      max-width: 440px;
-      width: 90%;
-      z-index: 1001;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
-    }
-    #glossary-popup-category {
-      display: inline-block;
-      background: var(--red);
-      color: white;
-      font-size: 0.72rem;
-      font-weight: 700;
-      padding: 2px 10px;
-      border-radius: 20px;
-      margin-bottom: 10px;
-    }
-    #glossary-popup h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 10px; }
-    #glossary-popup p { font-size: 0.88rem; color: #333; line-height: 1.75; margin-bottom: 18px; }
-    #glossary-close {
-      display: block;
-      width: 100%;
-      padding: 10px;
-      background: var(--dark);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    #glossary-close:hover { background: #333; }
-
-    footer {
-      text-align: center;
-      padding: 32px 16px;
-      font-size: 0.8rem;
-      color: #aaa;
-      border-top: 1px solid var(--border);
-    }
-    footer a { color: var(--red); text-decoration: none; }
-
-    @media (max-width: 600px) {
-      .term-grid { grid-template-columns: 1fr; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>用語集 | 顔出しなしYouTube攻略ロードマップ</title>
+<script src="glossary.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', sans-serif; background: #fafaf8; color: #1a1a18; line-height: 1.7; }
+.wrap { max-width: 720px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+.page-title { font-size: 22px; font-weight: 500; margin-bottom: 0.25rem; }
+.page-sub { font-size: 14px; color: #888; margin-bottom: 2rem; }
+.search-wrap { position: relative; margin-bottom: 1.5rem; }
+.search-input { width: 100%; font-size: 15px; padding: 10px 16px 10px 40px; border-radius: 10px; border: 1px solid #ddd; background: #fff; color: #1a1a18; }
+.search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #aaa; font-size: 16px; }
+.term-card { background: #fff; border: 1px solid #ebebeb; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 0.75rem; }
+.term-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 0.5rem; }
+.term-name { font-size: 17px; font-weight: 500; }
+.term-reading { font-size: 12px; color: #aaa; }
+.term-simple { font-size: 14px; color: #444; font-weight: 500; margin-bottom: 0.4rem; }
+.term-detail { font-size: 13px; color: #777; line-height: 1.7; }
+.back-link { display: inline-block; font-size: 13px; color: #888; margin-bottom: 1.5rem; text-decoration: none; }
+.back-link:hover { color: #333; }
+.no-result { font-size: 14px; color: #aaa; text-align: center; padding: 2rem; }
+</style>
 </head>
 <body>
-
-<header>
-  <h1>📖 YouTube <span>用語集</span></h1>
-  <p>顔出しなしYouTube広告収入ロードマップの全用語を解説</p>
-  <nav class="header-nav">
-    <a href="index.html">📋 ロードマップに戻る</a>
-    <a href="glossary.html">📖 用語集（今ここ）</a>
-  </nav>
-</header>
-
-<main>
-
+<div class="wrap">
+  <a href="index.html" class="back-link">← ロードマップツールに戻る</a>
+  <p class="page-title">用語集</p>
+  <p class="page-sub">わからない言葉が出てきたときに確認してください。随時追加していきます。</p>
   <div class="search-wrap">
     <span class="search-icon">🔍</span>
-    <input type="text" id="search-input" placeholder="用語を検索... （例: CPM、サムネイル、SEO）">
+    <input class="search-input" type="text" placeholder="用語を検索..." oninput="filterTerms(this.value)" id="searchInput">
   </div>
-
-  <div class="category-filter" id="category-filter"></div>
-
-  <div class="glossary-stats" id="glossary-stats"></div>
-
-  <div id="glossary-content"></div>
-
-  <div class="no-results" id="no-results">
-    <div style="font-size:2.5rem;margin-bottom:12px;">🔎</div>
-    <div>該当する用語が見つかりませんでした</div>
-    <div style="font-size:0.8rem;margin-top:6px;">別のキーワードで検索してみてください</div>
-  </div>
-
-</main>
-
-<footer>
-  <p><a href="index.html">📋 ロードマップに戻る</a> &nbsp;|&nbsp; 顔出しなしYouTube 自力攻略ロードマップ</p>
-</footer>
-
+  <div id="termList"></div>
+</div>
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-
-  const categories = [...new Set(Object.values(GLOSSARY).map(v => v.category))];
-  let activeCategory = "すべて";
-
-  // Category filter buttons
-  const filterEl = document.getElementById("category-filter");
-  const allBtn = document.createElement("button");
-  allBtn.className = "cat-btn active";
-  allBtn.textContent = "すべて (" + Object.keys(GLOSSARY).length + ")";
-  allBtn.addEventListener("click", () => setCategory("すべて", allBtn));
-  filterEl.appendChild(allBtn);
-
-  categories.forEach(cat => {
-    const count = Object.values(GLOSSARY).filter(v => v.category === cat).length;
-    const btn = document.createElement("button");
-    btn.className = "cat-btn";
-    btn.textContent = cat + " (" + count + ")";
-    btn.addEventListener("click", () => setCategory(cat, btn));
-    filterEl.appendChild(btn);
+function renderTerms(filter) {
+  const list = document.getElementById('termList');
+  const terms = Object.entries(GLOSSARY).filter(([k,v]) => {
+    if(!filter) return true;
+    return k.includes(filter) || v.reading.includes(filter) || v.simple.includes(filter) || v.detail.includes(filter);
   });
-
-  function setCategory(cat, btn) {
-    activeCategory = cat;
-    document.querySelectorAll(".cat-btn").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    render();
+  if(terms.length === 0) {
+    list.innerHTML = '<p class="no-result">「' + filter + '」に一致する用語が見つかりませんでした。</p>';
+    return;
   }
-
-  // Search
-  document.getElementById("search-input").addEventListener("input", render);
-
-  function render() {
-    const query = document.getElementById("search-input").value.toLowerCase();
-    const content = document.getElementById("glossary-content");
-    const noResults = document.getElementById("no-results");
-    content.innerHTML = "";
-
-    const filtered = Object.entries(GLOSSARY).filter(([key, val]) => {
-      const matchCat = activeCategory === "すべて" || val.category === activeCategory;
-      const matchQ = !query ||
-        key.toLowerCase().includes(query) ||
-        val.term.toLowerCase().includes(query) ||
-        val.desc.toLowerCase().includes(query) ||
-        val.category.toLowerCase().includes(query);
-      return matchCat && matchQ;
-    });
-
-    document.getElementById("glossary-stats").innerHTML =
-      `<strong>${filtered.length}</strong> 件の用語が見つかりました`;
-
-    if (filtered.length === 0) {
-      noResults.classList.add("visible");
-      return;
-    }
-    noResults.classList.remove("visible");
-
-    const byCategory = {};
-    filtered.forEach(([key, val]) => {
-      if (!byCategory[val.category]) byCategory[val.category] = [];
-      byCategory[val.category].push([key, val]);
-    });
-
-    Object.entries(byCategory).forEach(([cat, items]) => {
-      const section = document.createElement("div");
-      section.className = "category-section";
-
-      const heading = document.createElement("div");
-      heading.className = "category-heading";
-      heading.innerHTML = `<h2>${cat}</h2><span class="category-badge">${items.length}語</span>`;
-      section.appendChild(heading);
-
-      const grid = document.createElement("div");
-      grid.className = "term-grid";
-
-      items.forEach(([key, val]) => {
-        const card = document.createElement("div");
-        card.className = "term-card";
-        card.innerHTML = `
-          <div class="click-hint">タップで詳細</div>
-          <div class="term-card-name">${val.term}</div>
-          <div class="term-card-preview">${val.desc}</div>
-          <span class="term-card-tag">${val.category}</span>
-        `;
-        card.addEventListener("click", () => showGlossary(key));
-        grid.appendChild(card);
-      });
-
-      section.appendChild(grid);
-      content.appendChild(section);
-    });
-  }
-
-  render();
-});
+  list.innerHTML = terms.map(([k,v]) => `
+    <div class="term-card" id="term-${k}">
+      <div class="term-head">
+        <span class="term-name">${k}</span>
+        <span class="term-reading">（${v.reading}）</span>
+      </div>
+      <p class="term-simple">→ ${v.simple}</p>
+      <p class="term-detail">${v.detail}</p>
+    </div>
+  `).join('');
+}
+function filterTerms(val) { renderTerms(val.trim()); }
+renderTerms('');
+const hash = location.hash.replace('#','');
+if(hash) { const el = document.getElementById('term-'+decodeURIComponent(hash)); if(el) el.scrollIntoView({behavior:'smooth'}); }
 </script>
 </body>
 </html>
