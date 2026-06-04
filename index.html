@@ -132,6 +132,38 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.6; }
 .popup-link:hover { color: #333; }
 
 .hidden { display: none; }
+
+/* 企画ストック */
+.stock-item { display: flex; align-items: center; gap: 8px; padding: 9px 0; border-bottom: 1px solid #f0f0ea; }
+.stock-item:last-child { border-bottom: none; }
+.stock-title { flex: 1; font-size: 14px; line-height: 1.4; }
+.stock-genre { font-size: 12px; color: #aaa; }
+.status-todo { font-size: 11px; padding: 3px 10px; border-radius: 20px; background: #f5f5f0; color: #888; border: 1px solid #ddd; white-space: nowrap; }
+.status-doing { font-size: 11px; padding: 3px 10px; border-radius: 20px; background: #fdf6e3; color: #7a5c00; border: 1px solid #f0d890; white-space: nowrap; }
+.status-done { font-size: 11px; padding: 3px 10px; border-radius: 20px; background: #eaf5ea; color: #2a6e2a; border: 1px solid #b8dfb8; white-space: nowrap; }
+
+/* チャンネル管理 */
+.ch-item { padding: 12px 0; border-bottom: 1px solid #f0f0ea; }
+.ch-item:last-child { border-bottom: none; }
+.ch-name { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+.ch-meta { display: flex; flex-wrap: wrap; gap: 8px; font-size: 12px; color: #888; }
+
+/* 週次レポート */
+.report-item { border-bottom: 1px solid #f0f0ea; }
+.report-item:last-child { border-bottom: none; }
+.report-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; cursor: pointer; }
+.report-date { font-size: 13px; font-weight: 500; }
+.report-preview { font-size: 12px; color: #aaa; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 260px; }
+.report-body { display: none; padding: 0 0 12px; }
+.report-body.open { display: block; }
+.report-section { background: #f5f5f0; border-radius: 8px; padding: 10px 12px; margin-bottom: 6px; }
+.report-section-title { font-size: 11px; color: #aaa; margin-bottom: 4px; }
+.report-section-text { font-size: 13px; color: #444; line-height: 1.7; }
+
+/* SVGチャート */
+.chart-svg-wrap { overflow-x: auto; margin-top: 0.5rem; }
+.chart-legend { display: flex; gap: 16px; font-size: 12px; color: #888; margin-top: 6px; flex-wrap: wrap; }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 4px; vertical-align: middle; }
 </style>
 </head>
 <body>
@@ -153,6 +185,8 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.6; }
   <button class="phase-btn" onclick="showPhase(5)">5. 外注・仕組み化</button>
   <button class="phase-btn" onclick="showPhase(6)">6. 売却判断</button>
   <button class="phase-btn" onclick="showPhase(7)">自分について</button>
+  <button class="phase-btn" onclick="showPhase(8)">8. チャンネル管理</button>
+  <button class="phase-btn" onclick="showPhase(9)">9. 週次レポート</button>
 </div>
 
 <!-- Phase 0 -->
@@ -292,6 +326,30 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.6; }
     <button class="btn btn-small" style="margin-top:0.6rem;" onclick="copyTemplate()">📋 コピーする</button>
     <span id="copyDone" style="font-size:12px; color:#2a6e2a; margin-left:8px; display:none;">コピーしました！</span>
   </div>
+
+  <div class="card">
+    <p class="card-title">企画ストック — 当たり企画を記録する</p>
+    <div class="field-group">
+      <span class="field-label">企画タイトル</span>
+      <input type="text" id="stockTitle" placeholder="例：月5万円を1ヶ月で達成した方法">
+    </div>
+    <div style="display:flex; gap:8px; align-items:flex-end; margin-bottom:0.75rem;">
+      <div style="flex:1;">
+        <span class="field-label">ジャンル</span>
+        <input type="text" id="stockGenre" placeholder="例：副業・節約">
+      </div>
+      <div style="flex:1;">
+        <span class="field-label">ステータス</span>
+        <select id="stockStatus">
+          <option value="todo">未着手</option>
+          <option value="doing">進行中</option>
+          <option value="done">完了</option>
+        </select>
+      </div>
+      <button class="btn btn-dark" onclick="addStock()">追加</button>
+    </div>
+    <div id="stockList"><p style="font-size:13px;color:#aaa;padding:8px 0;">まだ企画がありません</p></div>
+  </div>
 </div>
 
 <!-- Phase 3 -->
@@ -340,6 +398,27 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.6; }
       <input type="number" id="simView" placeholder="例: 100000" oninput="calcRevenue()">
     </div>
     <div id="revenueResult"></div>
+  </div>
+
+  <div class="card">
+    <p class="card-title">収益化推移グラフ — 進捗を記録する</p>
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:0.75rem;">
+      <div>
+        <span class="field-label">日付</span>
+        <input type="date" id="logDate">
+      </div>
+      <div>
+        <span class="field-label">登録者数（人）</span>
+        <input type="number" id="logSubs" placeholder="例: 120">
+      </div>
+      <div>
+        <span class="field-label">総再生時間（時間）</span>
+        <input type="number" id="logHours" placeholder="例: 350">
+      </div>
+    </div>
+    <button class="btn btn-dark btn-small" onclick="addMonetizeLog()">記録する</button>
+    <div class="chart-svg-wrap" id="monetizeChartWrap" style="margin-top:0.75rem;"></div>
+    <div id="monetizeLogList"></div>
   </div>
 </div>
 
@@ -429,6 +508,81 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.6; }
   </div>
 </div>
 
+<!-- Phase 8 -->
+<div class="phase-panel" id="phase8">
+  <p class="section-title">チャンネル管理リスト</p>
+  <p class="section-sub">保有・運営中のチャンネルをまとめて管理します。ステータスを切り替えて売却や外注化の判断に使ってください。</p>
+
+  <div class="card">
+    <p class="card-title">チャンネルを追加する</p>
+    <div class="field-group">
+      <span class="field-label">チャンネル名</span>
+      <input type="text" id="chName" placeholder="例：雑学まとめch">
+    </div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:0.75rem;">
+      <div>
+        <span class="field-label">ジャンル</span>
+        <input type="text" id="chGenre" placeholder="例：雑学・豆知識">
+      </div>
+      <div>
+        <span class="field-label">ステータス</span>
+        <select id="chStatus">
+          <option value="active">運営継続</option>
+          <option value="sell">売却候補</option>
+          <option value="outsourced">外注化済み</option>
+        </select>
+      </div>
+      <div>
+        <span class="field-label">月収（万円）</span>
+        <input type="number" id="chIncome" placeholder="例: 8" step="0.5">
+      </div>
+      <div>
+        <span class="field-label">1日の作業時間（時間）</span>
+        <input type="number" id="chWorkHour" placeholder="例: 1.5" step="0.5">
+      </div>
+    </div>
+    <button class="btn btn-dark" onclick="addChannel()">追加する</button>
+  </div>
+
+  <div class="card">
+    <p class="card-title">チャンネル一覧</p>
+    <div id="channelList"><p style="font-size:13px;color:#aaa;padding:8px 0;">まだチャンネルが登録されていません</p></div>
+  </div>
+</div>
+
+<!-- Phase 9 -->
+<div class="phase-panel" id="phase9">
+  <p class="section-title">週次レポート</p>
+  <p class="section-sub">週に1回、活動を振り返ります。記録を積み重ねることで改善のパターンが見えてきます。</p>
+
+  <div class="card">
+    <p class="card-title">今週のレポートを書く</p>
+    <div class="field-group">
+      <span class="field-label">日付（週の終わり）</span>
+      <input type="date" id="reportDate">
+    </div>
+    <div class="field-group">
+      <span class="field-label">今週やったこと</span>
+      <textarea id="reportDid" placeholder="例：動画を3本投稿した。サムネイルのデザインを変えた。"></textarea>
+    </div>
+    <div class="field-group">
+      <span class="field-label">来週やること</span>
+      <textarea id="reportWill" placeholder="例：企画を5本ストックする。台本を外注してみる。"></textarea>
+    </div>
+    <div class="field-group">
+      <span class="field-label">気づき・メモ</span>
+      <textarea id="reportNote" placeholder="例：タイトルに数字を入れた動画がクリック率が高かった。"></textarea>
+    </div>
+    <button class="btn btn-dark" onclick="saveWeeklyReport()">保存する</button>
+    <span id="reportSaved" style="font-size:12px; color:#2a6e2a; margin-left:8px; display:none;">保存しました！</span>
+  </div>
+
+  <div class="card">
+    <p class="card-title">過去のレポート</p>
+    <div id="reportList"><p style="font-size:13px;color:#aaa;padding:8px 0;">まだレポートがありません</p></div>
+  </div>
+</div>
+
 </div><!-- /wrap -->
 
 <!-- 用語ポップアップ -->
@@ -473,8 +627,12 @@ let checkState = JSON.parse(localStorage.getItem('yt_checks') || '{}');
 function showPhase(n) {
   document.querySelectorAll('.phase-panel').forEach((p,i) => p.classList.toggle('active', i===n));
   document.querySelectorAll('.phase-btn').forEach((b,i) => b.classList.toggle('active', i===n));
+  if(n===2) renderStockList();
   if(n===3) renderChecklist();
+  if(n===4) { renderMonetizeChart(); renderMonetizeLogList(); }
   if(n===7) renderProfile();
+  if(n===8) renderChannelList();
+  if(n===9) renderReportList();
 }
 
 function toggleSuggest() {
@@ -666,6 +824,247 @@ function showTerm(name) {
 function closeTermPopup() { document.getElementById('termOverlay').classList.remove('show'); }
 function closePopup(e) { if(e.target===document.getElementById('termOverlay')) closeTermPopup(); }
 document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeTermPopup(); });
+
+/* ── 企画ストック ── */
+let planStock = JSON.parse(localStorage.getItem('yt_plan_stock') || '[]');
+
+function addStock() {
+  const title = document.getElementById('stockTitle').value.trim();
+  const genre = document.getElementById('stockGenre').value.trim();
+  const status = document.getElementById('stockStatus').value;
+  if (!title) return;
+  planStock.unshift({ id: Date.now(), title, genre, status });
+  localStorage.setItem('yt_plan_stock', JSON.stringify(planStock));
+  document.getElementById('stockTitle').value = '';
+  document.getElementById('stockGenre').value = '';
+  renderStockList();
+}
+
+function updateStockStatus(id, status) {
+  const item = planStock.find(p => p.id === id);
+  if (item) { item.status = status; localStorage.setItem('yt_plan_stock', JSON.stringify(planStock)); renderStockList(); }
+}
+
+function deleteStock(id) {
+  planStock = planStock.filter(p => p.id !== id);
+  localStorage.setItem('yt_plan_stock', JSON.stringify(planStock));
+  renderStockList();
+}
+
+function renderStockList() {
+  const el = document.getElementById('stockList');
+  if (!el) return;
+  if (!planStock.length) { el.innerHTML = '<p style="font-size:13px;color:#aaa;padding:8px 0;">まだ企画がありません</p>'; return; }
+  el.innerHTML = planStock.map(p => {
+    const sOpt = ['todo','doing','done'].map(v => `<option value="${v}"${p.status===v?' selected':''}>${{todo:'未着手',doing:'進行中',done:'完了'}[v]}</option>`).join('');
+    return `<div class="stock-item">
+      <div style="flex:1; min-width:0;">
+        <div class="stock-title">${p.title}</div>
+        ${p.genre ? `<div class="stock-genre">${p.genre}</div>` : ''}
+      </div>
+      <select style="font-size:11px;padding:3px 8px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#444;" onchange="updateStockStatus(${p.id},this.value)">${sOpt}</select>
+      <button style="font-size:11px;padding:3px 8px;border:1px solid #eee;border-radius:6px;background:transparent;color:#ccc;cursor:pointer;" onclick="deleteStock(${p.id})">削除</button>
+    </div>`;
+  }).join('');
+}
+
+/* ── 収益化推移グラフ ── */
+let monetizeLog = JSON.parse(localStorage.getItem('yt_monetize_log') || '[]');
+
+function addMonetizeLog() {
+  const date = document.getElementById('logDate').value;
+  const subs = parseInt(document.getElementById('logSubs').value) || 0;
+  const hours = parseInt(document.getElementById('logHours').value) || 0;
+  if (!date) return;
+  const idx = monetizeLog.findIndex(d => d.date === date);
+  if (idx >= 0) monetizeLog[idx] = { date, subs, hours };
+  else monetizeLog.push({ date, subs, hours });
+  monetizeLog.sort((a, b) => a.date.localeCompare(b.date));
+  localStorage.setItem('yt_monetize_log', JSON.stringify(monetizeLog));
+  document.getElementById('logSubs').value = '';
+  document.getElementById('logHours').value = '';
+  renderMonetizeChart();
+  renderMonetizeLogList();
+}
+
+function deleteMonetizeLog(date) {
+  monetizeLog = monetizeLog.filter(d => d.date !== date);
+  localStorage.setItem('yt_monetize_log', JSON.stringify(monetizeLog));
+  renderMonetizeChart();
+  renderMonetizeLogList();
+}
+
+function renderMonetizeChart() {
+  const wrap = document.getElementById('monetizeChartWrap');
+  if (!wrap) return;
+  if (!monetizeLog.length) {
+    wrap.innerHTML = '<p style="font-size:13px;color:#aaa;padding:4px 0;">記録を追加するとグラフが表示されます</p>';
+    return;
+  }
+  const W = 560, H = 170, PL = 42, PR = 16, PT = 14, PB = 28;
+  const cW = W - PL - PR, cH = H - PT - PB;
+  const n = monetizeLog.length;
+  function xp(i) { return PL + (n > 1 ? i * cW / (n - 1) : cW / 2); }
+  function yp(pct) { return PT + cH - Math.min(pct, 1.05) * cH; }
+  const subsPath = monetizeLog.map((d,i) => `${i===0?'M':'L'}${xp(i).toFixed(1)},${yp(d.subs/1000).toFixed(1)}`).join(' ');
+  const hoursPath = monetizeLog.map((d,i) => `${i===0?'M':'L'}${xp(i).toFixed(1)},${yp(d.hours/4000).toFixed(1)}`).join(' ');
+  const subsDots = monetizeLog.map((d,i) => `<circle cx="${xp(i).toFixed(1)}" cy="${yp(d.subs/1000).toFixed(1)}" r="4" fill="#2a6e2a"/>`).join('');
+  const hoursDots = monetizeLog.map((d,i) => `<circle cx="${xp(i).toFixed(1)}" cy="${yp(d.hours/4000).toFixed(1)}" r="4" fill="#1a4a8a"/>`).join('');
+  const xLabels = monetizeLog.map((d,i) => `<text x="${xp(i).toFixed(1)}" y="${H-6}" text-anchor="middle" font-size="10" fill="#bbb">${d.date.slice(5)}</text>`).join('');
+  const yGrid = [0,50,100].map(p => {
+    const yy = (PT + cH - p/100*cH).toFixed(1);
+    return `<line x1="${PL}" y1="${yy}" x2="${W-PR}" y2="${yy}" stroke="#f0f0ea" stroke-width="1"/>
+            <text x="${PL-4}" y="${(parseFloat(yy)+4).toFixed(1)}" text-anchor="end" font-size="10" fill="#ccc">${p}%</text>`;
+  }).join('');
+  wrap.innerHTML = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px;height:${H}px;display:block;">
+    ${yGrid}
+    ${n>1?`<path d="${subsPath}" fill="none" stroke="#2a6e2a" stroke-width="2" stroke-linejoin="round"/>`:''}
+    ${n>1?`<path d="${hoursPath}" fill="none" stroke="#1a4a8a" stroke-width="2" stroke-linejoin="round"/>`:''}
+    ${subsDots}${hoursDots}${xLabels}
+  </svg>
+  <div class="chart-legend">
+    <span><span class="legend-dot" style="background:#2a6e2a;"></span>登録者数（目標1,000人）</span>
+    <span><span class="legend-dot" style="background:#1a4a8a;"></span>総再生時間（目標4,000時間）</span>
+  </div>`;
+}
+
+function renderMonetizeLogList() {
+  const el = document.getElementById('monetizeLogList');
+  if (!el || !monetizeLog.length) { if(el) el.innerHTML=''; return; }
+  el.innerHTML = `<table class="cmp-table" style="margin-top:0.75rem;">
+    <thead><tr><th>日付</th><th>登録者数</th><th>総再生時間</th><th></th></tr></thead>
+    <tbody>${monetizeLog.slice().reverse().map(d=>`<tr>
+      <td>${d.date}</td>
+      <td>${d.subs.toLocaleString()}人</td>
+      <td>${d.hours.toLocaleString()}時間</td>
+      <td><button style="font-size:11px;padding:2px 8px;border:1px solid #eee;border-radius:6px;background:transparent;color:#aaa;cursor:pointer;" onclick="deleteMonetizeLog('${d.date}')">削除</button></td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+}
+
+/* ── チャンネル管理 ── */
+let channelList = JSON.parse(localStorage.getItem('yt_channel_list') || '[]');
+
+function addChannel() {
+  const name = document.getElementById('chName').value.trim();
+  const genre = document.getElementById('chGenre').value.trim();
+  const status = document.getElementById('chStatus').value;
+  const income = parseFloat(document.getElementById('chIncome').value) || 0;
+  const workHour = parseFloat(document.getElementById('chWorkHour').value) || 0;
+  if (!name) return;
+  channelList.unshift({ id: Date.now(), name, genre, status, income, workHour });
+  localStorage.setItem('yt_channel_list', JSON.stringify(channelList));
+  document.getElementById('chName').value = '';
+  document.getElementById('chGenre').value = '';
+  document.getElementById('chIncome').value = '';
+  document.getElementById('chWorkHour').value = '';
+  renderChannelList();
+}
+
+function updateChannelStatus(id, status) {
+  const ch = channelList.find(c => c.id === id);
+  if (ch) { ch.status = status; localStorage.setItem('yt_channel_list', JSON.stringify(channelList)); renderChannelList(); }
+}
+
+function deleteChannel(id) {
+  channelList = channelList.filter(c => c.id !== id);
+  localStorage.setItem('yt_channel_list', JSON.stringify(channelList));
+  renderChannelList();
+}
+
+function renderChannelList() {
+  const el = document.getElementById('channelList');
+  if (!el) return;
+  if (!channelList.length) { el.innerHTML = '<p style="font-size:13px;color:#aaa;padding:8px 0;">まだチャンネルが登録されていません</p>'; return; }
+  const sLabels = { active:'運営継続', sell:'売却候補', outsourced:'外注化済み' };
+  el.innerHTML = channelList.map(ch => {
+    const sOpt = Object.entries(sLabels).map(([v,l]) => `<option value="${v}"${ch.status===v?' selected':''}>${l}</option>`).join('');
+    const hourly = ch.income > 0 && ch.workHour > 0 ? Math.round(ch.income * 10000 / 30 / ch.workHour) : 0;
+    return `<div class="ch-item">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <div class="ch-name">${ch.name}</div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <select style="font-size:11px;padding:3px 8px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#444;" onchange="updateChannelStatus(${ch.id},this.value)">${sOpt}</select>
+          <button style="font-size:11px;padding:3px 8px;border:1px solid #eee;border-radius:6px;background:transparent;color:#ccc;cursor:pointer;" onclick="deleteChannel(${ch.id})">削除</button>
+        </div>
+      </div>
+      <div class="ch-meta">
+        ${ch.genre ? `<span>${ch.genre}</span><span>·</span>` : ''}
+        ${ch.income > 0 ? `<span>月収 ${ch.income}万円</span>` : ''}
+        ${ch.workHour > 0 ? `<span>作業 ${ch.workHour}時間/日</span>` : ''}
+        ${hourly > 0 ? `<span>時給換算 ${hourly.toLocaleString()}円</span>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ── 週次レポート ── */
+let weeklyReports = JSON.parse(localStorage.getItem('yt_weekly_reports') || '[]');
+
+function saveWeeklyReport() {
+  const date = document.getElementById('reportDate').value;
+  const did = document.getElementById('reportDid').value.trim();
+  const will = document.getElementById('reportWill').value.trim();
+  const note = document.getElementById('reportNote').value.trim();
+  if (!date) return;
+  const report = { date, did, will, note };
+  const idx = weeklyReports.findIndex(r => r.date === date);
+  if (idx >= 0) weeklyReports[idx] = report;
+  else weeklyReports.unshift(report);
+  weeklyReports.sort((a, b) => b.date.localeCompare(a.date));
+  localStorage.setItem('yt_weekly_reports', JSON.stringify(weeklyReports));
+  document.getElementById('reportDid').value = '';
+  document.getElementById('reportWill').value = '';
+  document.getElementById('reportNote').value = '';
+  const saved = document.getElementById('reportSaved');
+  saved.style.display = 'inline';
+  setTimeout(() => saved.style.display = 'none', 2000);
+  renderReportList();
+}
+
+function toggleReport(key) {
+  const body = document.getElementById('rb-' + key);
+  if (body) body.classList.toggle('open');
+}
+
+function deleteReport(date) {
+  weeklyReports = weeklyReports.filter(r => r.date !== date);
+  localStorage.setItem('yt_weekly_reports', JSON.stringify(weeklyReports));
+  renderReportList();
+}
+
+function renderReportList() {
+  const el = document.getElementById('reportList');
+  if (!el) return;
+  if (!weeklyReports.length) { el.innerHTML = '<p style="font-size:13px;color:#aaa;padding:8px 0;">まだレポートがありません</p>'; return; }
+  el.innerHTML = weeklyReports.map(r => {
+    const key = r.date.replace(/-/g, '_');
+    return `<div class="report-item">
+      <div class="report-header" onclick="toggleReport('${key}')">
+        <div>
+          <div class="report-date">${r.date}</div>
+          ${r.did ? `<div class="report-preview">${r.did}</div>` : ''}
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <span style="font-size:11px;color:#ccc;">▼</span>
+          <button style="font-size:11px;padding:3px 8px;border:1px solid #eee;border-radius:6px;background:transparent;color:#ccc;cursor:pointer;" onclick="event.stopPropagation();deleteReport('${r.date}')">削除</button>
+        </div>
+      </div>
+      <div class="report-body" id="rb-${key}">
+        ${r.did ? `<div class="report-section"><div class="report-section-title">今週やったこと</div><div class="report-section-text">${r.did.replace(/\n/g,'<br>')}</div></div>` : ''}
+        ${r.will ? `<div class="report-section"><div class="report-section-title">来週やること</div><div class="report-section-text">${r.will.replace(/\n/g,'<br>')}</div></div>` : ''}
+        ${r.note ? `<div class="report-section"><div class="report-section-title">気づき・メモ</div><div class="report-section-text">${r.note.replace(/\n/g,'<br>')}</div></div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ── 日付デフォルト設定 ── */
+(function() {
+  const today = new Date().toISOString().slice(0, 10);
+  document.getElementById('logDate').value = today;
+  document.getElementById('reportDate').value = today;
+})();
 </script>
 
 </body>
