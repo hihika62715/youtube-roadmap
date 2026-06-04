@@ -164,6 +164,15 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.6; }
 .chart-svg-wrap { overflow-x: auto; margin-top: 0.5rem; }
 .chart-legend { display: flex; gap: 16px; font-size: 12px; color: #888; margin-top: 6px; flex-wrap: wrap; }
 .legend-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 4px; vertical-align: middle; }
+
+/* YouTube API機能 */
+@keyframes api-spin { to { transform: rotate(360deg); } }
+.api-spinner { display: inline-block; width: 12px; height: 12px; border: 2px solid #ddd; border-top-color: #555; border-radius: 50%; animation: api-spin 0.6s linear infinite; vertical-align: middle; margin-right: 5px; }
+.trending-item { padding: 9px 0; border-bottom: 1px solid #f0f0ea; cursor: pointer; }
+.trending-item:last-child { border-bottom: none; }
+.trending-item:hover { opacity: 0.8; }
+.trending-bar-wrap { height: 5px; background: #eee; border-radius: 3px; overflow: hidden; margin: 5px 0 3px; }
+.trending-bar { height: 100%; background: #1a1a18; border-radius: 3px; transition: width 0.5s; }
 </style>
 </head>
 <body>
@@ -230,6 +239,42 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.6; }
   <p class="section-sub">ジャンル選びを間違えると3ヶ月が無駄になります。必ず数字で確認してから決めましょう。</p>
 
   <div class="card">
+    <p class="card-title">APIキー設定（自動リサーチ用）</p>
+    <div class="field-row">
+      <input type="password" id="apiKeyInput" placeholder="AIzaSy..." style="flex:1;" autocomplete="off">
+      <button class="btn btn-small" onclick="toggleApiKeyVisible()">表示</button>
+      <button class="btn btn-dark btn-small" onclick="saveApiKey()">保存</button>
+    </div>
+    <div id="apiKeyStatus" style="font-size:12px; margin-top:6px;"></div>
+    <button class="btn btn-small" style="margin-top:8px;" onclick="toggleApiGuide()">📖 APIキーの取得方法</button>
+    <div id="apiGuide" class="hidden">
+      <div class="how-box" style="margin-top:0.75rem;">
+        <p class="how-title">📖 YouTube Data API キーの取得手順（Mac・Chrome）</p>
+        <div class="how-step"><div class="how-num">1</div><p class="how-text">Chromeで <span class="how-code">console.cloud.google.com</span> を開き、Googleアカウントでログインする</p></div>
+        <div class="how-step"><div class="how-num">2</div><p class="how-text">画面上部「プロジェクトを選択」→「新しいプロジェクト」→ 名前を入力して「作成」をクリックする</p></div>
+        <div class="how-step"><div class="how-num">3</div><p class="how-text">左メニュー「APIとサービス」→「ライブラリ」をクリックする</p></div>
+        <div class="how-step"><div class="how-num">4</div><p class="how-text">検索窓に <span class="how-code">YouTube Data API v3</span> と入力 → 選択して「有効にする」をクリックする</p></div>
+        <div class="how-step"><div class="how-num">5</div><p class="how-text">左メニュー「認証情報」→「認証情報を作成」→「APIキー」をクリックする</p></div>
+        <div class="how-step"><div class="how-num">6</div><p class="how-text">表示された <span class="how-code">AIzaSy〜</span> の文字列をコピーして上の入力欄に貼り付け「保存」を押す</p></div>
+        <p style="font-size:12px;color:#aaa;margin-top:8px;">⚠️ APIは1日10,000ユニット（リサーチ約50〜100回分）まで無料。毎日リセットされます。</p>
+        <p style="font-size:12px;color:#aaa;">🔒 APIキーはこのブラウザのlocalStorageにのみ保存されます。外部には送信されません。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="card-title">APIで自動リサーチ</p>
+    <div class="field-row" style="margin-bottom:0.5rem;">
+      <input type="text" id="apiResearchKeyword" placeholder="例：雑学、節約、歴史解説...">
+      <button class="btn btn-dark" id="apiResearchBtn" onclick="researchGenreByApi()">リサーチ開始</button>
+    </div>
+    <button class="btn btn-small" id="trendingBtn" onclick="fetchTrendingGenres()">✨ 今人気のジャンルを探す</button>
+    <p style="font-size:11px;color:#aaa;margin-top:5px;">リサーチ結果はステップ2に自動入力されます。3ヶ月増加数だけ手動確認が必要です。</p>
+    <div id="trendingResult" style="margin-top:0.75rem;"></div>
+    <div id="apiResearchResult" style="margin-top:0.5rem;"></div>
+  </div>
+
+  <div class="card">
     <p class="card-title">ステップ1 — 調べたいジャンルを入力する</p>
     <div class="field-row">
       <input type="text" id="genreInput" placeholder="例：雑学、節約、歴史解説...">
@@ -241,6 +286,7 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.6; }
 
   <div class="card">
     <p class="card-title">ステップ2 — YouTubeで数字を調べて入力する</p>
+    <div id="autoFillNote" style="display:none; font-size:12px; color:#2a6e2a; background:#eaf5ea; border:1px solid #b8dfb8; border-radius:8px; padding:8px 12px; margin-bottom:0.75rem;">✓ APIリサーチで登録者数・再生数を自動入力しました。内容を確認して「判定する」を押してください。<br><span style="color:#7a5c00;">⚠️ 直近3ヶ月の登録者増加数は <a href="https://socialblade.com" target="_blank" style="color:#7a5c00;">SocialBlade</a> で手動確認が必要です。</span></div>
     <div class="how-box">
       <p class="how-title">📖 調べ方（Mac・Chrome）</p>
       <div class="how-step"><div class="how-num">1</div><p class="how-text">Chromeを開いて <span class="how-code">youtube.com</span> に行く</p></div>
@@ -1059,11 +1105,214 @@ function renderReportList() {
   }).join('');
 }
 
+/* ── YouTube Data API 自動リサーチ ── */
+function saveApiKey() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  if (!key) return;
+  localStorage.setItem('yt_api_key', key);
+  document.getElementById('apiKeyInput').value = '';
+  updateApiKeyStatus();
+}
+
+function clearApiKey() {
+  if (!confirm('APIキーを削除しますか？')) return;
+  localStorage.removeItem('yt_api_key');
+  updateApiKeyStatus();
+}
+
+function updateApiKeyStatus() {
+  const key = localStorage.getItem('yt_api_key');
+  const el = document.getElementById('apiKeyStatus');
+  if (!el) return;
+  if (key) {
+    el.innerHTML = `<span style="color:#2a6e2a;">✓ APIキー設定済み（末尾: …${key.slice(-6)}）</span>&nbsp;&nbsp;<button onclick="clearApiKey()" style="font-size:11px;padding:2px 8px;border:1px solid #eee;border-radius:6px;background:transparent;color:#aaa;cursor:pointer;">削除</button>`;
+  } else {
+    el.innerHTML = '<span style="color:#aaa;">APIキー未設定 — 保存するとリサーチ機能が使えます</span>';
+  }
+}
+
+function toggleApiKeyVisible() {
+  const el = document.getElementById('apiKeyInput');
+  el.type = el.type === 'password' ? 'text' : 'password';
+}
+
+function toggleApiGuide() {
+  document.getElementById('apiGuide').classList.toggle('hidden');
+}
+
+async function ytFetch(endpoint, params) {
+  const key = localStorage.getItem('yt_api_key');
+  if (!key) throw new Error('APIキーが設定されていません。「APIキー設定」から登録してください。');
+  const qs = new URLSearchParams({ ...params, key }).toString();
+  const res = await fetch(`https://www.googleapis.com/youtube/v3/${endpoint}?${qs}`);
+  const data = await res.json();
+  if (data.error) throw new Error(`APIエラー: ${data.error.message}`);
+  return data;
+}
+
+async function researchGenreByApi() {
+  const kw = (document.getElementById('apiResearchKeyword').value.trim()
+           || document.getElementById('genreInput').value.trim());
+  if (!kw) {
+    document.getElementById('apiResearchResult').innerHTML = '<div class="result-box result-check">キーワードを入力してください</div>';
+    return;
+  }
+
+  const btn = document.getElementById('apiResearchBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="api-spinner"></span>取得中...';
+  document.getElementById('apiResearchResult').innerHTML = '<p style="font-size:13px;color:#aaa;">チャンネルデータを取得しています...</p>';
+
+  try {
+    // 1. チャンネル検索
+    const searchData = await ytFetch('search', {
+      part: 'snippet', q: kw, type: 'channel',
+      maxResults: 5, regionCode: 'JP', relevanceLanguage: 'ja'
+    });
+    if (!searchData.items?.length) throw new Error('チャンネルが見つかりませんでした。別のキーワードをお試しください。');
+
+    const channelIds = searchData.items.map(i => i.id.channelId).join(',');
+
+    // 2. チャンネル統計取得
+    const chData = await ytFetch('channels', { part: 'statistics,snippet', id: channelIds });
+
+    // 3. 各チャンネルの人気動画の再生数を並列取得
+    const channels = await Promise.all(chData.items.map(async ch => {
+      try {
+        const vs = await ytFetch('search', {
+          part: 'id', channelId: ch.id, type: 'video', order: 'viewCount', maxResults: 1
+        });
+        if (!vs.items?.length) return { ...ch, topViews: 0 };
+        const vd = await ytFetch('videos', { part: 'statistics', id: vs.items[0].id.videoId });
+        return { ...ch, topViews: parseInt(vd.items[0]?.statistics?.viewCount || 0) };
+      } catch { return { ...ch, topViews: 0 }; }
+    }));
+
+    // テーブル表示
+    const rows = channels.map(ch => {
+      const subs = parseInt(ch.statistics?.subscriberCount || 0);
+      const views = ch.topViews;
+      const r = subs > 0 ? (views / subs).toFixed(1) : '—';
+      const badge = subs > 0 && views / subs >= 3
+        ? '<span style="color:#2a6e2a;font-weight:500;">◎</span>'
+        : subs > 0 && views / subs >= 1
+          ? '<span style="color:#7a5c00;">△</span>'
+          : '<span style="color:#ccc;">—</span>';
+      return `<tr>
+        <td style="font-size:12px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${ch.snippet.title}</td>
+        <td>${subs.toLocaleString()}人</td>
+        <td>${views.toLocaleString()}回</td>
+        <td>${r}倍 ${badge}</td>
+        <td><button class="btn btn-small" onclick="applyApiData(${subs},${views})">使う</button></td>
+      </tr>`;
+    }).join('');
+
+    document.getElementById('apiResearchResult').innerHTML = `
+      <table class="cmp-table" style="margin-bottom:0.75rem;">
+        <thead><tr><th>チャンネル名</th><th>登録者数</th><th>人気動画再生数</th><th>比率</th><th></th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div class="result-box result-info" style="font-size:12px;">
+        「使う」ボタンでステップ2に自動入力されます（1位は自動適用済み）。<br>
+        ⚠️ 3ヶ月の登録者増加数はAPIでは取得不可。<a href="https://socialblade.com" target="_blank" style="color:#1a4a8a;text-decoration:underline;">SocialBlade</a> でご確認ください。
+      </div>`;
+
+    // 1位チャンネルを自動適用
+    const top = channels[0];
+    applyApiData(parseInt(top.statistics?.subscriberCount || 0), top.topViews);
+    document.getElementById('genreInput').value = kw;
+    document.getElementById('apiResearchKeyword').value = kw;
+
+  } catch(e) {
+    document.getElementById('apiResearchResult').innerHTML = `<div class="result-box result-ng">${e.message}</div>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'リサーチ開始';
+  }
+}
+
+function applyApiData(subs, views) {
+  document.getElementById('subCount').value = subs;
+  document.getElementById('viewCount').value = views;
+  const note = document.getElementById('autoFillNote');
+  if (note) note.style.display = 'block';
+}
+
+const TRENDING_GENRES = [
+  { name: '雑学・豆知識', query: '雑学 豆知識' },
+  { name: 'AI・テクノロジー解説', query: 'AI テクノロジー 解説' },
+  { name: 'お金・節約・副業', query: '節約 副業 お金 稼ぐ' },
+  { name: '歴史解説', query: '歴史 解説 日本史' },
+  { name: '健康・医療', query: '健康 医療 予防' },
+  { name: 'ビジネス・スキル', query: 'ビジネス スキル 本 解説' },
+  { name: '心理学・人間関係', query: '心理学 人間関係' },
+  { name: '都市伝説・ミステリー', query: '都市伝説 ミステリー' },
+  { name: '怖い話・ホラー', query: '怖い話 ホラー 心霊' },
+  { name: '宇宙・科学', query: '宇宙 科学 解説' },
+];
+
+async function fetchTrendingGenres() {
+  const btn = document.getElementById('trendingBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="api-spinner"></span>調査中（20〜30秒かかります）...';
+  document.getElementById('trendingResult').innerHTML = '<p style="font-size:13px;color:#aaa;">10ジャンルの直近30日再生数を比較しています...</p>';
+
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+
+  try {
+    const results = await Promise.all(TRENDING_GENRES.map(async g => {
+      try {
+        const sd = await ytFetch('search', {
+          part: 'id', q: g.query, type: 'video', order: 'viewCount',
+          publishedAfter: thirtyDaysAgo, maxResults: 3, regionCode: 'JP', relevanceLanguage: 'ja'
+        });
+        if (!sd.items?.length) return { ...g, totalViews: 0 };
+        const ids = sd.items.map(i => i.id.videoId).join(',');
+        const vd = await ytFetch('videos', { part: 'statistics', id: ids });
+        const totalViews = vd.items.reduce((s, v) => s + parseInt(v.statistics?.viewCount || 0), 0);
+        return { ...g, totalViews };
+      } catch { return { ...g, totalViews: 0 }; }
+    }));
+
+    const top5 = results.filter(r => r.totalViews > 0).sort((a, b) => b.totalViews - a.totalViews).slice(0, 5);
+    if (!top5.length) throw new Error('データを取得できませんでした。APIキーを確認してください。');
+
+    const maxViews = top5[0].totalViews;
+    let html = '<p style="font-size:12px;font-weight:500;color:#555;margin-bottom:8px;">直近30日 再生数 TOP 5 — 選ぶとリサーチ開始</p>';
+    top5.forEach((g, i) => {
+      const barPct = Math.round(g.totalViews / maxViews * 100);
+      html += `<div class="trending-item" onclick="selectTrendingGenre('${g.name.replace(/'/g,"\\'")}')">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;">
+          <span style="font-size:13px;font-weight:500;">${i + 1}. ${g.name}</span>
+          <span style="font-size:12px;color:#aaa;">${(g.totalViews / 10000).toFixed(1)}万再生</span>
+        </div>
+        <div class="trending-bar-wrap"><div class="trending-bar" style="width:${barPct}%;"></div></div>
+        <span style="font-size:11px;color:#2a6e2a;">▶ このジャンルをリサーチする</span>
+      </div>`;
+    });
+    document.getElementById('trendingResult').innerHTML = html;
+
+  } catch(e) {
+    document.getElementById('trendingResult').innerHTML = `<div class="result-box result-ng">${e.message}</div>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '✨ 今人気のジャンルを探す';
+  }
+}
+
+function selectTrendingGenre(name) {
+  document.getElementById('apiResearchKeyword').value = name;
+  document.getElementById('genreInput').value = name;
+  document.getElementById('apiResearchKeyword').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  setTimeout(() => researchGenreByApi(), 300);
+}
+
 /* ── 日付デフォルト設定 ── */
 (function() {
   const today = new Date().toISOString().slice(0, 10);
   document.getElementById('logDate').value = today;
   document.getElementById('reportDate').value = today;
+  updateApiKeyStatus();
 })();
 </script>
 
