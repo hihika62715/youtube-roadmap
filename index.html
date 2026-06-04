@@ -320,7 +320,7 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.6; }
         <div class="how-step"><div class="how-num">3</div><p class="how-text">「YouTube」を選んで結果をクリックする</p></div>
         <div class="how-step"><div class="how-num">4</div><p class="how-text">「Monthly Gains」の「Subscribers」の数字3ヶ月分を足して入力する</p></div>
       </div>
-      <input type="number" id="growthCount" placeholder="例: 3000">
+      <input type="number" id="growthCount" placeholder="例: 3000" oninput="saveResearchCache()">
     </div>
   </div>
 
@@ -681,6 +681,7 @@ let checkState = JSON.parse(localStorage.getItem('yt_checks') || '{}');
 function showPhase(n) {
   document.querySelectorAll('.phase-panel').forEach((p,i) => p.classList.toggle('active', i===n));
   document.querySelectorAll('.phase-btn').forEach((b,i) => b.classList.toggle('active', i===n));
+  if(n===1) restoreResearchCache();
   if(n===2) renderStockList();
   if(n===3) renderChecklist();
   if(n===4) { renderMonetizeChart(); renderMonetizeLogList(); }
@@ -705,20 +706,38 @@ function runGenreCheck() {
   const views = parseInt(document.getElementById('viewCount').value)||0;
   const el = document.getElementById('genreResult');
   if(!genre){el.innerHTML='<div class="result-box result-check">ジャンル名を入力してください</div>';return;}
-  let msgs=[]; let score=0;
-  if(growth>0){
-    if(growth>=1000){msgs.push('✓ 直近3ヶ月の登録者増加数が1,000人以上 → 参入OK');score++;}
-    else{msgs.push('△ 直近3ヶ月の登録者増加数が1,000人未満 → まだ伸び中のジャンルかもしれません');}
+
+  const noData = growth===0 && subs===0 && views===0;
+  const ratioOk = subs>0 && views>0 && views/subs>=3;
+  const growthEntered = growth>0;
+  const growthOk = growthEntered && growth>=1000;
+
+  const msgs = [];
+  if(growthEntered) {
+    if(growthOk) msgs.push('✓ 直近3ヶ月の登録者増加数が1,000人以上 → 参入OK');
+    else msgs.push('△ 直近3ヶ月の登録者増加数が1,000人未満 → まだ伸び中のジャンルかもしれません');
   }
-  if(subs>0&&views>0){
+  if(subs>0 && views>0) {
     const r=(views/subs).toFixed(1);
-    if(views/subs>=3){msgs.push(`✓ 再生数が登録者数の${r}倍 → 企画の力で伸びています`);score++;}
-    else{msgs.push(`△ 再生数が登録者数の${r}倍 → ファンが見ているだけの可能性があります`);}
+    if(ratioOk) msgs.push(`✓ 再生数が登録者数の${r}倍 → 企画の力で伸びています`);
+    else msgs.push(`△ 再生数が登録者数の${r}倍 → ファンが見ているだけの可能性があります`);
   }
-  const noData = growth===0&&subs===0&&views===0;
-  const cls=score>=2?'result-ok':score===1?'result-check':'result-ng';
-  const verdict=noData?`「${genre}」`:score>=2?`「${genre}」参入OK`:score===1?`「${genre}」要追加調査`:  `「${genre}」参入注意`;
-  el.innerHTML=`<div class="result-box ${cls}"><strong>${verdict}</strong>${msgs.length?'<br>'+msgs.join('<br>'):''}${noData?'<br>上の数字を入力すると詳しく判定できます':''}</div>`;
+
+  let cls, verdict;
+  if(noData) {
+    cls='result-check'; verdict=`「${genre}」`;
+  } else if(ratioOk && (!growthEntered || growthOk)) {
+    cls='result-ok'; verdict=`「${genre}」参入OK`;
+  } else if(ratioOk || growthOk) {
+    cls='result-check'; verdict=`「${genre}」要追加調査`;
+  } else {
+    cls='result-ng'; verdict=`「${genre}」参入注意`;
+  }
+
+  const growthNote = !growthEntered && !noData
+    ? '<br><span style="font-size:12px;opacity:0.75;">※ 3ヶ月増加数が未入力です。SocialBladeで確認するとさらに精度が上がります。</span>' : '';
+
+  el.innerHTML=`<div class="result-box ${cls}"><strong>${verdict}</strong>${msgs.length?'<br>'+msgs.join('<br>'):''}${noData?'<br>上の数字を入力すると詳しく判定できます':''}${growthNote}</div>`;
 }
 
 function addCompare() {
@@ -1238,6 +1257,7 @@ async function researchGenreByApi() {
   } finally {
     btn.disabled = false;
     btn.textContent = 'このジャンルをリサーチする';
+    saveResearchCache();
   }
 }
 
@@ -1248,11 +1268,13 @@ function applyApiData(subs, views) {
   document.getElementById('autoFilledBadge').style.display = 'block';
   document.getElementById('autoFilledValues').textContent =
     `登録者数 ${subs.toLocaleString()}人 ／ 人気動画 ${views.toLocaleString()}回`;
+  saveResearchCache();
 }
 
 function switchToManual() {
   document.getElementById('manualInputFields').style.display = 'block';
   document.getElementById('autoFilledBadge').style.display = 'none';
+  saveResearchCache();
 }
 
 const TRENDING_GENRES = [
@@ -1321,6 +1343,34 @@ function selectTrendingGenre(name) {
   document.getElementById('genreInput').value = name;
   document.getElementById('apiResearchBtn').scrollIntoView({ behavior: 'smooth', block: 'center' });
   setTimeout(() => researchGenreByApi(), 300);
+}
+
+function saveResearchCache() {
+  const autoFilled = document.getElementById('autoFilledBadge')?.style.display !== 'none'
+    ? { subs: document.getElementById('subCount').value, views: document.getElementById('viewCount').value }
+    : null;
+  localStorage.setItem('yt_research_cache', JSON.stringify({
+    keyword: document.getElementById('genreInput')?.value || '',
+    tableHtml: document.getElementById('apiResearchResult')?.innerHTML || '',
+    growth: document.getElementById('growthCount')?.value || '',
+    autoFilled
+  }));
+}
+
+function restoreResearchCache() {
+  const cache = JSON.parse(localStorage.getItem('yt_research_cache') || 'null');
+  if (!cache) return;
+  if (cache.keyword) document.getElementById('genreInput').value = cache.keyword;
+  if (cache.tableHtml) document.getElementById('apiResearchResult').innerHTML = cache.tableHtml;
+  if (cache.growth) document.getElementById('growthCount').value = cache.growth;
+  if (cache.autoFilled) {
+    document.getElementById('subCount').value = cache.autoFilled.subs;
+    document.getElementById('viewCount').value = cache.autoFilled.views;
+    document.getElementById('manualInputFields').style.display = 'none';
+    document.getElementById('autoFilledBadge').style.display = 'block';
+    document.getElementById('autoFilledValues').textContent =
+      `登録者数 ${parseInt(cache.autoFilled.subs).toLocaleString()}人 ／ 人気動画 ${parseInt(cache.autoFilled.views).toLocaleString()}回`;
+  }
 }
 
 /* ── 日付デフォルト設定 ── */
