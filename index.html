@@ -681,7 +681,7 @@ let checkState = JSON.parse(localStorage.getItem('yt_checks') || '{}');
 function showPhase(n) {
   document.querySelectorAll('.phase-panel').forEach((p,i) => p.classList.toggle('active', i===n));
   document.querySelectorAll('.phase-btn').forEach((b,i) => b.classList.toggle('active', i===n));
-  if(n===1) restoreResearchCache();
+  if(n===1) { restoreResearchCache(); renderCompare(); }
   if(n===2) renderStockList();
   if(n===3) renderChecklist();
   if(n===4) { renderMonetizeChart(); renderMonetizeLogList(); }
@@ -740,22 +740,55 @@ function runGenreCheck() {
   el.innerHTML=`<div class="result-box ${cls}"><strong>${verdict}</strong>${msgs.length?'<br>'+msgs.join('<br>'):''}${noData?'<br>上の数字を入力すると詳しく判定できます':''}${growthNote}</div>`;
 }
 
+let compareData = JSON.parse(localStorage.getItem('yt_compare') || '[]');
+
+function cmpBadge(ratio, growth) {
+  const ratioOk = ratio >= 3;
+  const growthOk = growth > 0 && growth >= 1000;
+  const growthEntered = growth > 0;
+  if (ratioOk && growthOk) return '<span style="color:#2a6e2a;font-weight:500;">◎ 参入OK</span>';
+  if (ratioOk) return '<span style="color:#2a6e2a;">○ 参入OK（増加数未確認）</span>';
+  return '<span style="color:#8b2020;">× NG</span>';
+}
+
+function addCompareEntry(genre, growth, ratio) {
+  if (!genre || ratio <= 0) return;
+  compareData.push({ id: Date.now(), genre, growth, ratio });
+  localStorage.setItem('yt_compare', JSON.stringify(compareData));
+  renderCompare();
+}
+
 function addCompare() {
-  const g=document.getElementById('cmpGenre').value.trim();
-  const gr=parseInt(document.getElementById('cmpGrowth').value)||0;
-  const ra=parseFloat(document.getElementById('cmpRatio').value)||0;
-  if(!g) return;
-  const ok=gr>=1000&&ra>=3;
-  const chk=gr>=1000||ra>=3;
-  const badge=ok?'<span style="color:#2a6e2a">◎ OK</span>':chk?'<span style="color:#7a5c00">△ 要検討</span>':'<span style="color:#8b2020">✕ NG</span>';
-  const id=Date.now();
-  const tr=document.createElement('tr');
-  tr.id='cr'+id;
-  tr.innerHTML=`<td>${g}</td><td>${gr.toLocaleString()}人</td><td>${ra.toFixed(1)}倍</td><td>${badge}</td><td><button style="font-size:11px;padding:2px 8px;border:1px solid #eee;border-radius:6px;background:transparent;color:#aaa;cursor:pointer;" onclick="document.getElementById('cr${id}').remove()">削除</button></td>`;
-  document.getElementById('cmpBody').appendChild(tr);
-  document.getElementById('cmpGenre').value='';
-  document.getElementById('cmpGrowth').value='';
-  document.getElementById('cmpRatio').value='';
+  const g = document.getElementById('cmpGenre').value.trim();
+  const gr = parseInt(document.getElementById('cmpGrowth').value) || 0;
+  const ra = parseFloat(document.getElementById('cmpRatio').value) || 0;
+  if (!g || ra <= 0) return;
+  addCompareEntry(g, gr, ra);
+  document.getElementById('cmpGenre').value = '';
+  document.getElementById('cmpGrowth').value = '';
+  document.getElementById('cmpRatio').value = '';
+}
+
+function deleteCompare(id) {
+  compareData = compareData.filter(d => d.id !== id);
+  localStorage.setItem('yt_compare', JSON.stringify(compareData));
+  renderCompare();
+}
+
+function renderCompare() {
+  const tbody = document.getElementById('cmpBody');
+  if (!tbody) return;
+  if (!compareData.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="color:#aaa;font-size:13px;padding:12px 0;">まだデータがありません</td></tr>';
+    return;
+  }
+  tbody.innerHTML = compareData.map(d => `<tr>
+    <td>${d.genre}</td>
+    <td>${d.growth > 0 ? d.growth.toLocaleString() + '人' : '<span style="color:#ccc;">—</span>'}</td>
+    <td>${d.ratio.toFixed(1)}倍</td>
+    <td>${cmpBadge(d.ratio, d.growth)}</td>
+    <td><button style="font-size:11px;padding:2px 8px;border:1px solid #eee;border-radius:6px;background:transparent;color:#aaa;cursor:pointer;" onclick="deleteCompare(${d.id})">削除</button></td>
+  </tr>`).join('');
 }
 
 function runPlanCheck() {
@@ -1268,6 +1301,10 @@ function applyApiData(subs, views) {
   document.getElementById('autoFilledBadge').style.display = 'block';
   document.getElementById('autoFilledValues').textContent =
     `登録者数 ${subs.toLocaleString()}人 ／ 人気動画 ${views.toLocaleString()}回`;
+  const genre = document.getElementById('genreInput').value.trim();
+  const growth = parseInt(document.getElementById('growthCount').value) || 0;
+  const ratio = subs > 0 ? views / subs : 0;
+  if (genre && ratio > 0) addCompareEntry(genre, growth, ratio);
   saveResearchCache();
 }
 
@@ -1379,6 +1416,7 @@ function restoreResearchCache() {
   document.getElementById('logDate').value = today;
   document.getElementById('reportDate').value = today;
   updateApiKeyStatus();
+  renderCompare();
 })();
 </script>
 
