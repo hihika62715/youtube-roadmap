@@ -236,79 +236,82 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.6; }
 <!-- Phase 1 -->
 <div class="phase-panel" id="phase1">
   <p class="section-title"><span class="term-link" onclick="showTerm('ジャンル')">ジャンル</span>選定チェッカー</p>
-  <p class="section-sub">ジャンル選びを間違えると3ヶ月が無駄になります。必ず数字で確認してから決めましょう。</p>
+  <p class="section-sub">ステップ1〜3の順に進めてください。ジャンル選びを間違えると3ヶ月が無駄になります。</p>
 
   <div class="card">
-    <p class="card-title">APIキー設定（自動リサーチ用）</p>
-    <div class="field-row">
-      <input type="password" id="apiKeyInput" placeholder="AIzaSy..." style="flex:1;" autocomplete="off">
-      <button class="btn btn-small" onclick="toggleApiKeyVisible()">表示</button>
-      <button class="btn btn-dark btn-small" onclick="saveApiKey()">保存</button>
-    </div>
-    <div id="apiKeyStatus" style="font-size:12px; margin-top:6px;"></div>
-    <button class="btn btn-small" style="margin-top:8px;" onclick="toggleApiGuide()">📖 APIキーの取得方法</button>
+    <p class="card-title" style="cursor:pointer;user-select:none;" onclick="toggleApiGuide()">🔑 APIキー設定（自動リサーチ用） <span id="apiKeyBadge" style="font-size:11px;font-weight:400;"></span></p>
     <div id="apiGuide" class="hidden">
-      <div class="how-box" style="margin-top:0.75rem;">
-        <p class="how-title">📖 YouTube Data API キーの取得手順（Mac・Chrome）</p>
+      <div class="field-row" style="margin-bottom:0.5rem;">
+        <input type="password" id="apiKeyInput" placeholder="AIzaSy..." style="flex:1;" autocomplete="off">
+        <button class="btn btn-small" onclick="toggleApiKeyVisible()">表示</button>
+        <button class="btn btn-dark btn-small" onclick="saveApiKey()">保存</button>
+      </div>
+      <div id="apiKeyStatus" style="font-size:12px; margin-bottom:0.75rem;"></div>
+      <div class="how-box">
+        <p class="how-title">📖 APIキーの取得手順（Mac・Chrome）</p>
         <div class="how-step"><div class="how-num">1</div><p class="how-text">Chromeで <span class="how-code">console.cloud.google.com</span> を開き、Googleアカウントでログインする</p></div>
-        <div class="how-step"><div class="how-num">2</div><p class="how-text">画面上部「プロジェクトを選択」→「新しいプロジェクト」→ 名前を入力して「作成」をクリックする</p></div>
+        <div class="how-step"><div class="how-num">2</div><p class="how-text">「プロジェクトを選択」→「新しいプロジェクト」→ 名前を入力して「作成」をクリックする</p></div>
         <div class="how-step"><div class="how-num">3</div><p class="how-text">左メニュー「APIとサービス」→「ライブラリ」をクリックする</p></div>
         <div class="how-step"><div class="how-num">4</div><p class="how-text">検索窓に <span class="how-code">YouTube Data API v3</span> と入力 → 選択して「有効にする」をクリックする</p></div>
         <div class="how-step"><div class="how-num">5</div><p class="how-text">左メニュー「認証情報」→「認証情報を作成」→「APIキー」をクリックする</p></div>
         <div class="how-step"><div class="how-num">6</div><p class="how-text">表示された <span class="how-code">AIzaSy〜</span> の文字列をコピーして上の入力欄に貼り付け「保存」を押す</p></div>
-        <p style="font-size:12px;color:#aaa;margin-top:8px;">⚠️ APIは1日10,000ユニット（リサーチ約50〜100回分）まで無料。毎日リセットされます。</p>
-        <p style="font-size:12px;color:#aaa;">🔒 APIキーはこのブラウザのlocalStorageにのみ保存されます。外部には送信されません。</p>
+        <p style="font-size:12px;color:#aaa;margin-top:8px;">⚠️ 1日10,000ユニット（リサーチ約50〜100回分）まで無料。毎日リセットされます。</p>
+        <p style="font-size:12px;color:#aaa;">🔒 APIキーはこのブラウザのlocalStorageにのみ保存。外部には送信されません。</p>
       </div>
     </div>
   </div>
 
   <div class="card">
-    <p class="card-title">APIで自動リサーチ</p>
-    <div class="field-row" style="margin-bottom:0.5rem;">
-      <input type="text" id="apiResearchKeyword" placeholder="例：雑学、節約、歴史解説...">
-      <button class="btn btn-dark" id="apiResearchBtn" onclick="researchGenreByApi()">リサーチ開始</button>
+    <p class="card-title">ステップ1 — ジャンルを決める</p>
+    <button class="btn btn-dark" id="trendingBtn" onclick="fetchTrendingGenres()" style="width:100%;margin-bottom:0.75rem;">✨ 今人気のジャンルを探す</button>
+    <div id="trendingResult"></div>
+    <div style="display:flex;align-items:center;gap:8px;margin:0.75rem 0 0.6rem;">
+      <div style="flex:1;height:1px;background:#eee;"></div>
+      <span style="font-size:12px;color:#aaa;white-space:nowrap;">または自分で入力</span>
+      <div style="flex:1;height:1px;background:#eee;"></div>
     </div>
-    <button class="btn btn-small" id="trendingBtn" onclick="fetchTrendingGenres()">✨ 今人気のジャンルを探す</button>
-    <p style="font-size:11px;color:#aaa;margin-top:5px;">リサーチ結果はステップ2に自動入力されます。3ヶ月増加数だけ手動確認が必要です。</p>
-    <div id="trendingResult" style="margin-top:0.75rem;"></div>
-    <div id="apiResearchResult" style="margin-top:0.5rem;"></div>
-  </div>
-
-  <div class="card">
-    <p class="card-title">ステップ1 — 調べたいジャンルを入力する</p>
     <div class="field-row">
       <input type="text" id="genreInput" placeholder="例：雑学、節約、歴史解説...">
-      <button class="btn btn-dark" onclick="runGenreCheck()">判定する</button>
     </div>
     <button class="btn btn-small" onclick="toggleSuggest()">📋 ジャンル候補を見る</button>
     <div id="genreChips" class="genre-chips hidden"></div>
   </div>
 
   <div class="card">
-    <p class="card-title">ステップ2 — YouTubeで数字を調べて入力する</p>
-    <div id="autoFillNote" style="display:none; font-size:12px; color:#2a6e2a; background:#eaf5ea; border:1px solid #b8dfb8; border-radius:8px; padding:8px 12px; margin-bottom:0.75rem;">✓ APIリサーチで登録者数・再生数を自動入力しました。内容を確認して「判定する」を押してください。<br><span style="color:#7a5c00;">⚠️ 直近3ヶ月の登録者増加数は <a href="https://socialblade.com" target="_blank" style="color:#7a5c00;">SocialBlade</a> で手動確認が必要です。</span></div>
-    <div class="how-box">
-      <p class="how-title">📖 調べ方（Mac・Chrome）</p>
-      <div class="how-step"><div class="how-num">1</div><p class="how-text">Chromeを開いて <span class="how-code">youtube.com</span> に行く</p></div>
-      <div class="how-step"><div class="how-num">2</div><p class="how-text">上部の検索窓に調べたいジャンル名を入力して Enter を押す</p></div>
-      <div class="how-step"><div class="how-num">3</div><p class="how-text">「フィルター」→「チャンネル」を選ぶ</p></div>
-      <div class="how-step"><div class="how-num">4</div><p class="how-text">上位に出てきたチャンネルを3〜5個クリックして開く</p></div>
-      <div class="how-step"><div class="how-num">5</div><p class="how-text">チャンネル名の下に表示されている「登録者数○万人」の数字を確認する</p></div>
-      <div class="how-step"><div class="how-num">6</div><p class="how-text">最新の動画をクリックして、タイトルの下に表示されている「再生数」を確認する</p></div>
-    </div>
+    <p class="card-title">ステップ2 — チャンネルデータを確認する</p>
+    <button class="btn btn-dark" id="apiResearchBtn" onclick="researchGenreByApi()" style="width:100%;margin-bottom:0.75rem;">このジャンルをリサーチする</button>
+    <div id="apiResearchResult"></div>
 
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:0.75rem;">
-      <div class="field-group">
-        <span class="field-label">代表チャンネルの登録者数（人）</span>
-        <input type="number" id="subCount" placeholder="例: 50000">
-      </div>
-      <div class="field-group">
-        <span class="field-label">最新動画の再生数（回）</span>
-        <input type="number" id="viewCount" placeholder="例: 80000">
+    <div id="autoFilledBadge" style="display:none; margin-top:0.75rem;">
+      <div class="result-box result-ok" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+        <div>
+          <strong>✓ 自動入力済み</strong><br>
+          <span id="autoFilledValues" style="font-size:13px;font-weight:400;"></span>
+        </div>
+        <button class="btn btn-small" onclick="switchToManual()">手動で修正</button>
       </div>
     </div>
 
-    <div class="field-group">
+    <div id="manualInputFields" style="margin-top:0.75rem;">
+      <div class="how-box" style="margin-bottom:0.75rem;">
+        <p class="how-title">📖 手動で調べる場合（Mac・Chrome）</p>
+        <div class="how-step"><div class="how-num">1</div><p class="how-text">Chromeで <span class="how-code">youtube.com</span> を開き、ジャンル名を検索する</p></div>
+        <div class="how-step"><div class="how-num">2</div><p class="how-text">「フィルター」→「チャンネル」を選んで上位チャンネルを開く</p></div>
+        <div class="how-step"><div class="how-num">3</div><p class="how-text">「登録者数」と最新動画の「再生数」を確認して下に入力する</p></div>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <div class="field-group" style="margin:0;">
+          <span class="field-label">代表チャンネルの登録者数（人）</span>
+          <input type="number" id="subCount" placeholder="例: 50000">
+        </div>
+        <div class="field-group" style="margin:0;">
+          <span class="field-label">最新動画の再生数（回）</span>
+          <input type="number" id="viewCount" placeholder="例: 80000">
+        </div>
+      </div>
+    </div>
+
+    <div class="field-group" style="margin-top:0.75rem;margin-bottom:0;">
       <span class="field-label">直近3ヶ月の登録者増加数（人）</span>
       <div class="how-box" style="margin-bottom:0.6rem;">
         <p class="how-title">📖 <span class="term-link" onclick="showTerm('SocialBlade')">SocialBlade</span> での調べ方（Mac・Chrome）</p>
@@ -319,11 +322,16 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.6; }
       </div>
       <input type="number" id="growthCount" placeholder="例: 3000">
     </div>
+  </div>
+
+  <div class="card">
+    <p class="card-title">ステップ3 — 参入判定</p>
+    <button class="btn btn-dark" onclick="runGenreCheck()" style="width:100%;margin-bottom:0.75rem;">判定する</button>
     <div id="genreResult"></div>
   </div>
 
   <div class="card">
-    <p class="card-title">ステップ3 — 複数のジャンルを比べる</p>
+    <p class="card-title">複数のジャンルを比べる</p>
     <p style="font-size:12px; color:#aaa; margin-bottom:0.75rem;">最低3〜5ジャンル調べて比較してから決めましょう</p>
     <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:0.75rem;">
       <input type="text" id="cmpGenre" placeholder="ジャンル名" style="flex:1; min-width:100px;">
@@ -1112,6 +1120,7 @@ function saveApiKey() {
   localStorage.setItem('yt_api_key', key);
   document.getElementById('apiKeyInput').value = '';
   updateApiKeyStatus();
+  document.getElementById('apiGuide').classList.add('hidden');
 }
 
 function clearApiKey() {
@@ -1123,11 +1132,19 @@ function clearApiKey() {
 function updateApiKeyStatus() {
   const key = localStorage.getItem('yt_api_key');
   const el = document.getElementById('apiKeyStatus');
-  if (!el) return;
-  if (key) {
-    el.innerHTML = `<span style="color:#2a6e2a;">✓ APIキー設定済み（末尾: …${key.slice(-6)}）</span>&nbsp;&nbsp;<button onclick="clearApiKey()" style="font-size:11px;padding:2px 8px;border:1px solid #eee;border-radius:6px;background:transparent;color:#aaa;cursor:pointer;">削除</button>`;
-  } else {
-    el.innerHTML = '<span style="color:#aaa;">APIキー未設定 — 保存するとリサーチ機能が使えます</span>';
+  const badge = document.getElementById('apiKeyBadge');
+  if (el) {
+    el.innerHTML = key
+      ? `<span style="color:#2a6e2a;">✓ 設定済み（末尾: …${key.slice(-6)}）</span>&nbsp;&nbsp;<button onclick="clearApiKey()" style="font-size:11px;padding:2px 8px;border:1px solid #eee;border-radius:6px;background:transparent;color:#aaa;cursor:pointer;">削除</button>`
+      : '<span style="color:#aaa;">未設定 — 保存すると自動リサーチが使えます</span>';
+  }
+  if (badge) {
+    badge.textContent = key ? '（設定済み ✓）' : '（未設定 — クリックして設定）';
+    badge.style.color = key ? '#2a6e2a' : '#aaa';
+  }
+  if (!key) {
+    const guide = document.getElementById('apiGuide');
+    if (guide) guide.classList.remove('hidden');
   }
 }
 
@@ -1151,10 +1168,9 @@ async function ytFetch(endpoint, params) {
 }
 
 async function researchGenreByApi() {
-  const kw = (document.getElementById('apiResearchKeyword').value.trim()
-           || document.getElementById('genreInput').value.trim());
+  const kw = document.getElementById('genreInput').value.trim();
   if (!kw) {
-    document.getElementById('apiResearchResult').innerHTML = '<div class="result-box result-check">キーワードを入力してください</div>';
+    document.getElementById('apiResearchResult').innerHTML = '<div class="result-box result-check">ステップ1でジャンル名を入力してください</div>';
     return;
   }
 
@@ -1208,34 +1224,35 @@ async function researchGenreByApi() {
     }).join('');
 
     document.getElementById('apiResearchResult').innerHTML = `
-      <table class="cmp-table" style="margin-bottom:0.75rem;">
+      <table class="cmp-table" style="margin-bottom:0.6rem;">
         <thead><tr><th>チャンネル名</th><th>登録者数</th><th>人気動画再生数</th><th>比率</th><th></th></tr></thead>
         <tbody>${rows}</tbody>
       </table>
-      <div class="result-box result-info" style="font-size:12px;">
-        「使う」ボタンでステップ2に自動入力されます（1位は自動適用済み）。<br>
-        ⚠️ 3ヶ月の登録者増加数はAPIでは取得不可。<a href="https://socialblade.com" target="_blank" style="color:#1a4a8a;text-decoration:underline;">SocialBlade</a> でご確認ください。
-      </div>`;
+      <p style="font-size:12px;color:#aaa;">「使う」でそのデータを使用できます。1位は自動適用済みです。</p>`;
 
-    // 1位チャンネルを自動適用
     const top = channels[0];
     applyApiData(parseInt(top.statistics?.subscriberCount || 0), top.topViews);
-    document.getElementById('genreInput').value = kw;
-    document.getElementById('apiResearchKeyword').value = kw;
 
   } catch(e) {
     document.getElementById('apiResearchResult').innerHTML = `<div class="result-box result-ng">${e.message}</div>`;
   } finally {
     btn.disabled = false;
-    btn.textContent = 'リサーチ開始';
+    btn.textContent = 'このジャンルをリサーチする';
   }
 }
 
 function applyApiData(subs, views) {
   document.getElementById('subCount').value = subs;
   document.getElementById('viewCount').value = views;
-  const note = document.getElementById('autoFillNote');
-  if (note) note.style.display = 'block';
+  document.getElementById('manualInputFields').style.display = 'none';
+  document.getElementById('autoFilledBadge').style.display = 'block';
+  document.getElementById('autoFilledValues').textContent =
+    `登録者数 ${subs.toLocaleString()}人 ／ 人気動画 ${views.toLocaleString()}回`;
+}
+
+function switchToManual() {
+  document.getElementById('manualInputFields').style.display = 'block';
+  document.getElementById('autoFilledBadge').style.display = 'none';
 }
 
 const TRENDING_GENRES = [
@@ -1301,9 +1318,8 @@ async function fetchTrendingGenres() {
 }
 
 function selectTrendingGenre(name) {
-  document.getElementById('apiResearchKeyword').value = name;
   document.getElementById('genreInput').value = name;
-  document.getElementById('apiResearchKeyword').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  document.getElementById('apiResearchBtn').scrollIntoView({ behavior: 'smooth', block: 'center' });
   setTimeout(() => researchGenreByApi(), 300);
 }
 
