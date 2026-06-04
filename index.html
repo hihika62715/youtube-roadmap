@@ -134,13 +134,13 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.6; }
 .hidden { display: none; }
 
 /* 企画ストック */
-.stock-item { display: flex; align-items: center; gap: 8px; padding: 9px 0; border-bottom: 1px solid #f0f0ea; }
+.stock-item { padding: 12px 0; border-bottom: 1px solid #f0f0ea; }
 .stock-item:last-child { border-bottom: none; }
-.stock-title { flex: 1; font-size: 14px; line-height: 1.4; }
-.stock-genre { font-size: 12px; color: #aaa; }
-.status-todo { font-size: 11px; padding: 3px 10px; border-radius: 20px; background: #f5f5f0; color: #888; border: 1px solid #ddd; white-space: nowrap; }
-.status-doing { font-size: 11px; padding: 3px 10px; border-radius: 20px; background: #fdf6e3; color: #7a5c00; border: 1px solid #f0d890; white-space: nowrap; }
-.status-done { font-size: 11px; padding: 3px 10px; border-radius: 20px; background: #eaf5ea; color: #2a6e2a; border: 1px solid #b8dfb8; white-space: nowrap; }
+.stock-title { font-size: 14px; font-weight: 500; line-height: 1.4; margin-bottom: 3px; }
+.stock-meta { display: flex; flex-wrap: wrap; gap: 8px; font-size: 12px; color: #aaa; margin-bottom: 6px; }
+.stock-badge-ok { font-size: 11px; padding: 2px 8px; border-radius: 20px; background: #eaf5ea; color: #2a6e2a; border: 1px solid #b8dfb8; }
+.stock-badge-ng { font-size: 11px; padding: 2px 8px; border-radius: 20px; background: #fdecea; color: #8b2020; border: 1px solid #f5bcba; }
+.stock-filter-btn.active { background: #1a1a18; color: #fff; border-color: #1a1a18; }
 
 /* チャンネル管理 */
 .ch-item { padding: 12px 0; border-bottom: 1px solid #f0f0ea; }
@@ -348,21 +348,79 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.6; }
 
 <!-- Phase 2 -->
 <div class="phase-panel" id="phase2">
-  <p class="section-title"><span class="term-link" onclick="showTerm('企画')">企画</span>の当たり判定</p>
-  <p class="section-sub">参考にする動画が「ファンで再生されているか」「企画の力で伸びているか」を調べます。登録者数の3倍以上の再生数があれば企画力で伸びています。</p>
+  <p class="section-title"><span class="term-link" onclick="showTerm('企画')">企画</span>の当たり判定 ＆ ストック</p>
+  <p class="section-sub">参考動画の数字を入力して当たり企画か判定し、そのままストックに保存できます。</p>
 
   <div class="card">
     <p class="card-title">当たり企画を見分ける</p>
-    <div class="field-group">
-      <span class="field-label">参考チャンネルの<span class="term-link" onclick="showTerm('チャンネル登録者数')">登録者数</span></span>
-      <input type="number" id="planSub" placeholder="例: 10000">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:0.75rem;">
+      <div class="field-group" style="margin:0; grid-column:1/-1;">
+        <span class="field-label">企画名（動画タイトルのキーワード）</span>
+        <input type="text" id="planTitle" placeholder="例：月5万円を1ヶ月で達成した方法">
+      </div>
+      <div class="field-group" style="margin:0; grid-column:1/-1;">
+        <span class="field-label">参考チャンネル名</span>
+        <input type="text" id="planChannel" placeholder="例：副業チャンネルABC">
+      </div>
+      <div class="field-group" style="margin:0;">
+        <span class="field-label">参考チャンネルの<span class="term-link" onclick="showTerm('チャンネル登録者数')">登録者数</span></span>
+        <input type="number" id="planSub" placeholder="例: 10000">
+      </div>
+      <div class="field-group" style="margin:0;">
+        <span class="field-label">その動画の<span class="term-link" onclick="showTerm('再生数')">再生数</span></span>
+        <input type="number" id="planView" placeholder="例: 45000">
+      </div>
     </div>
-    <div class="field-group">
-      <span class="field-label">その動画の<span class="term-link" onclick="showTerm('再生数')">再生数</span></span>
-      <input type="number" id="planView" placeholder="例: 45000">
-    </div>
-    <button class="btn btn-dark" onclick="runPlanCheck()">判定する</button>
+    <button class="btn btn-dark" style="width:100%;" onclick="runPlanCheck()">判定する</button>
     <div id="planResult"></div>
+  </div>
+
+  <div class="card">
+    <p class="card-title">手動で企画を登録する</p>
+    <div class="field-group">
+      <span class="field-label">企画名</span>
+      <input type="text" id="stockTitle" placeholder="例：月5万円を1ヶ月で達成した方法">
+    </div>
+    <div class="field-group">
+      <span class="field-label">チャンネル名</span>
+      <input type="text" id="stockChannel" placeholder="例：副業チャンネルABC">
+    </div>
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:0.75rem;">
+      <div>
+        <span class="field-label">登録者数（人）</span>
+        <input type="number" id="stockSubs" placeholder="例: 10000" oninput="calcStockRatio()">
+      </div>
+      <div>
+        <span class="field-label">再生数（回）</span>
+        <input type="number" id="stockViews" placeholder="例: 45000" oninput="calcStockRatio()">
+      </div>
+      <div>
+        <span class="field-label">倍率（自動計算）</span>
+        <input type="text" id="stockRatioDisplay" placeholder="—" readonly style="background:#f5f5f0; color:#555;">
+      </div>
+    </div>
+    <div style="display:flex; gap:8px; align-items:flex-end; margin-bottom:0.75rem;">
+      <div style="flex:1;">
+        <span class="field-label">ステータス</span>
+        <select id="stockStatus">
+          <option value="todo">未着手</option>
+          <option value="ref">参考中</option>
+          <option value="used">使用済み</option>
+        </select>
+      </div>
+      <button class="btn btn-dark" onclick="addStock()">登録する</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="card-title">当たり企画ストック一覧</p>
+    <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:0.75rem;">
+      <button class="btn btn-small stock-filter-btn active" onclick="filterStock('all', this)">すべて</button>
+      <button class="btn btn-small stock-filter-btn" onclick="filterStock('todo', this)">未着手</button>
+      <button class="btn btn-small stock-filter-btn" onclick="filterStock('ref', this)">参考中</button>
+      <button class="btn btn-small stock-filter-btn" onclick="filterStock('used', this)">使用済み</button>
+    </div>
+    <div id="stockList"><p style="font-size:13px;color:#aaa;padding:8px 0;">まだ企画がありません</p></div>
   </div>
 
   <div class="card">
@@ -379,30 +437,6 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.6; }
 上記の条件で台本を作成してください。</div>
     <button class="btn btn-small" style="margin-top:0.6rem;" onclick="copyTemplate()">📋 コピーする</button>
     <span id="copyDone" style="font-size:12px; color:#2a6e2a; margin-left:8px; display:none;">コピーしました！</span>
-  </div>
-
-  <div class="card">
-    <p class="card-title">企画ストック — 当たり企画を記録する</p>
-    <div class="field-group">
-      <span class="field-label">企画タイトル</span>
-      <input type="text" id="stockTitle" placeholder="例：月5万円を1ヶ月で達成した方法">
-    </div>
-    <div style="display:flex; gap:8px; align-items:flex-end; margin-bottom:0.75rem;">
-      <div style="flex:1;">
-        <span class="field-label">ジャンル</span>
-        <input type="text" id="stockGenre" placeholder="例：副業・節約">
-      </div>
-      <div style="flex:1;">
-        <span class="field-label">ステータス</span>
-        <select id="stockStatus">
-          <option value="todo">未着手</option>
-          <option value="doing">進行中</option>
-          <option value="done">完了</option>
-        </select>
-      </div>
-      <button class="btn btn-dark" onclick="addStock()">追加</button>
-    </div>
-    <div id="stockList"><p style="font-size:13px;color:#aaa;padding:8px 0;">まだ企画がありません</p></div>
   </div>
 </div>
 
@@ -682,7 +716,7 @@ function showPhase(n) {
   document.querySelectorAll('.phase-panel').forEach((p,i) => p.classList.toggle('active', i===n));
   document.querySelectorAll('.phase-btn').forEach((b,i) => b.classList.toggle('active', i===n));
   if(n===1) { restoreResearchCache(); renderCompare(); }
-  if(n===2) renderStockList();
+  if(n===2) renderStockList('all');
   if(n===3) renderChecklist();
   if(n===4) { renderMonetizeChart(); renderMonetizeLogList(); }
   if(n===7) renderProfile();
@@ -792,13 +826,39 @@ function renderCompare() {
 }
 
 function runPlanCheck() {
-  const sub=parseInt(document.getElementById('planSub').value)||0;
-  const view=parseInt(document.getElementById('planView').value)||0;
-  const el=document.getElementById('planResult');
-  if(!sub||!view){el.innerHTML='<div class="result-box result-check">2つの数字を入力してください</div>';return;}
-  const r=(view/sub).toFixed(1);
-  if(view/sub>=3){el.innerHTML=`<div class="result-box result-ok">◎ 当たり企画の可能性が高いです（登録者の${r}倍の再生数）<br>企画の力で伸びている動画です。参考にする価値があります。</div>`;}
-  else{el.innerHTML=`<div class="result-box result-check">△ ファンが見ている可能性があります（登録者の${r}倍の再生数）<br>登録者の3倍未満です。このチャンネルの別の動画も確認してみましょう。</div>`;}
+  const sub = parseInt(document.getElementById('planSub').value) || 0;
+  const view = parseInt(document.getElementById('planView').value) || 0;
+  const el = document.getElementById('planResult');
+  if (!sub || !view) { el.innerHTML = '<div class="result-box result-check">登録者数と再生数を入力してください</div>'; return; }
+  const r = (view / sub).toFixed(1);
+  const isHit = view / sub >= 3;
+  const resultHtml = isHit
+    ? `<div class="result-box result-ok">◎ 当たり企画の可能性が高いです（登録者の${r}倍の再生数）<br>企画の力で伸びている動画です。参考にする価値があります。</div>`
+    : `<div class="result-box result-check">△ ファンが見ている可能性があります（登録者の${r}倍の再生数）<br>登録者の3倍未満です。このチャンネルの別の動画も確認してみましょう。</div>`;
+  el.innerHTML = resultHtml + `<button class="btn btn-dark" style="width:100%;margin-top:0.6rem;" onclick="addStockFromJudge()">この企画をストックする</button>`;
+}
+
+function addStockFromJudge() {
+  const title = document.getElementById('planTitle').value.trim();
+  const channelName = document.getElementById('planChannel').value.trim();
+  const subs = parseInt(document.getElementById('planSub').value) || 0;
+  const views = parseInt(document.getElementById('planView').value) || 0;
+  const ratio = subs > 0 ? views / subs : 0;
+  if (!subs && !views) { alert('登録者数と再生数を入力してから判定してください'); return; }
+  const entry = {
+    id: Date.now(),
+    title: title || '（タイトル未入力）',
+    channelName,
+    subs,
+    views,
+    ratio,
+    status: 'todo'
+  };
+  planStock.unshift(entry);
+  localStorage.setItem('yt_plan_stock', JSON.stringify(planStock));
+  renderStockList('all');
+  const btn = document.querySelector('#planResult button');
+  if (btn) { btn.textContent = 'ストックしました ✓'; btn.disabled = true; }
 }
 
 function copyTemplate() {
@@ -933,43 +993,101 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeTermPopup(); 
 
 /* ── 企画ストック ── */
 let planStock = JSON.parse(localStorage.getItem('yt_plan_stock') || '[]');
+let stockFilterCurrent = 'all';
+
+const STOCK_STATUS_LABELS = { todo: '未着手', ref: '参考中', used: '使用済み' };
+const STOCK_STATUS_STYLES = {
+  todo: 'background:#f5f5f0;color:#888;border:1px solid #ddd;',
+  ref:  'background:#fdf6e3;color:#7a5c00;border:1px solid #f0d890;',
+  used: 'background:#eaf5ea;color:#2a6e2a;border:1px solid #b8dfb8;'
+};
+
+function calcStockRatio() {
+  const subs = parseInt(document.getElementById('stockSubs').value) || 0;
+  const views = parseInt(document.getElementById('stockViews').value) || 0;
+  const display = document.getElementById('stockRatioDisplay');
+  if (subs > 0 && views > 0) {
+    display.value = (views / subs).toFixed(1) + '倍';
+  } else {
+    display.value = '—';
+  }
+}
 
 function addStock() {
   const title = document.getElementById('stockTitle').value.trim();
-  const genre = document.getElementById('stockGenre').value.trim();
+  const channelName = document.getElementById('stockChannel').value.trim();
+  const subs = parseInt(document.getElementById('stockSubs').value) || 0;
+  const views = parseInt(document.getElementById('stockViews').value) || 0;
+  const ratio = subs > 0 && views > 0 ? views / subs : 0;
   const status = document.getElementById('stockStatus').value;
   if (!title) return;
-  planStock.unshift({ id: Date.now(), title, genre, status });
+  planStock.unshift({ id: Date.now(), title, channelName, subs, views, ratio, status });
   localStorage.setItem('yt_plan_stock', JSON.stringify(planStock));
   document.getElementById('stockTitle').value = '';
-  document.getElementById('stockGenre').value = '';
-  renderStockList();
+  document.getElementById('stockChannel').value = '';
+  document.getElementById('stockSubs').value = '';
+  document.getElementById('stockViews').value = '';
+  document.getElementById('stockRatioDisplay').value = '—';
+  renderStockList(stockFilterCurrent);
 }
 
 function updateStockStatus(id, status) {
   const item = planStock.find(p => p.id === id);
-  if (item) { item.status = status; localStorage.setItem('yt_plan_stock', JSON.stringify(planStock)); renderStockList(); }
+  if (item) {
+    item.status = status;
+    localStorage.setItem('yt_plan_stock', JSON.stringify(planStock));
+    renderStockList(stockFilterCurrent);
+  }
 }
 
 function deleteStock(id) {
   planStock = planStock.filter(p => p.id !== id);
   localStorage.setItem('yt_plan_stock', JSON.stringify(planStock));
-  renderStockList();
+  renderStockList(stockFilterCurrent);
 }
 
-function renderStockList() {
+function filterStock(filter, btn) {
+  stockFilterCurrent = filter;
+  document.querySelectorAll('.stock-filter-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderStockList(filter);
+}
+
+function renderStockList(filter) {
+  filter = filter || stockFilterCurrent || 'all';
   const el = document.getElementById('stockList');
   if (!el) return;
-  if (!planStock.length) { el.innerHTML = '<p style="font-size:13px;color:#aaa;padding:8px 0;">まだ企画がありません</p>'; return; }
-  el.innerHTML = planStock.map(p => {
-    const sOpt = ['todo','doing','done'].map(v => `<option value="${v}"${p.status===v?' selected':''}>${{todo:'未着手',doing:'進行中',done:'完了'}[v]}</option>`).join('');
+  const list = filter === 'all' ? planStock : planStock.filter(p => p.status === filter);
+  if (!list.length) {
+    el.innerHTML = '<p style="font-size:13px;color:#aaa;padding:8px 0;">該当する企画がありません</p>';
+    return;
+  }
+  el.innerHTML = list.map(p => {
+    const sOpt = Object.entries(STOCK_STATUS_LABELS).map(([v, l]) =>
+      `<option value="${v}"${p.status === v ? ' selected' : ''}>${l}</option>`
+    ).join('');
+    const ratioBadge = p.ratio >= 3
+      ? `<span class="stock-badge-ok">◎ ${p.ratio.toFixed(1)}倍</span>`
+      : p.ratio > 0
+        ? `<span class="stock-badge-ng">△ ${p.ratio.toFixed(1)}倍</span>`
+        : '';
+    const statusStyle = STOCK_STATUS_STYLES[p.status] || '';
     return `<div class="stock-item">
-      <div style="flex:1; min-width:0;">
-        <div class="stock-title">${p.title}</div>
-        ${p.genre ? `<div class="stock-genre">${p.genre}</div>` : ''}
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+        <div style="flex:1;min-width:0;">
+          <div class="stock-title">${p.title}</div>
+          <div class="stock-meta">
+            ${p.channelName ? `<span>${p.channelName}</span>` : ''}
+            ${p.subs > 0 ? `<span>登録者 ${p.subs.toLocaleString()}人</span>` : ''}
+            ${p.views > 0 ? `<span>再生 ${p.views.toLocaleString()}回</span>` : ''}
+            ${ratioBadge}
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;">
+          <select style="font-size:11px;padding:3px 8px;border-radius:8px;${statusStyle}" onchange="updateStockStatus(${p.id},this.value)">${sOpt}</select>
+          <button style="font-size:11px;padding:2px 8px;border:1px solid #eee;border-radius:6px;background:transparent;color:#ccc;cursor:pointer;" onclick="deleteStock(${p.id})">削除</button>
+        </div>
       </div>
-      <select style="font-size:11px;padding:3px 8px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#444;" onchange="updateStockStatus(${p.id},this.value)">${sOpt}</select>
-      <button style="font-size:11px;padding:3px 8px;border:1px solid #eee;border-radius:6px;background:transparent;color:#ccc;cursor:pointer;" onclick="deleteStock(${p.id})">削除</button>
     </div>`;
   }).join('');
 }
