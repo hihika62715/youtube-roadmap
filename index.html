@@ -414,12 +414,17 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.6; }
 
   <div class="card">
     <p class="card-title">当たり企画ストック一覧</p>
-    <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:0.75rem;">
+    <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:0.75rem; align-items:center;">
       <button class="btn btn-small stock-filter-btn active" onclick="filterStock('all', this)">すべて</button>
       <button class="btn btn-small stock-filter-btn" onclick="filterStock('todo', this)">未着手</button>
       <button class="btn btn-small stock-filter-btn" onclick="filterStock('ref', this)">参考中</button>
       <button class="btn btn-small stock-filter-btn" onclick="filterStock('used', this)">使用済み</button>
+      <div style="margin-left:auto; display:flex; gap:6px; align-items:center;">
+        <button class="btn btn-small" onclick="document.getElementById('csvFileInput').click()" style="border-color:#aaa;">📥 CSVインポート</button>
+        <input type="file" id="csvFileInput" accept=".csv" style="display:none;" onchange="importStockCSV(this)">
+      </div>
     </div>
+    <div id="csvImportMsg"></div>
     <div id="stockList"><p style="font-size:13px;color:#aaa;padding:8px 0;">まだ企画がありません</p></div>
   </div>
 
@@ -1051,6 +1056,63 @@ function filterStock(filter, btn) {
   document.querySelectorAll('.stock-filter-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
   renderStockList(filter);
+}
+
+function importStockCSV(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const text = e.target.result;
+    const STATUS_MAP = { '未着手': 'todo', '参考中': 'ref', '使用済み': 'used' };
+    const lines = text.split('\n').map(l => l.trim()).filter(l => l);
+    if (!lines.length) return;
+
+    // ヘッダー行スキップ（title で始まる行）
+    const dataLines = lines[0].startsWith('title') ? lines.slice(1) : lines;
+
+    let added = 0, skipped = 0;
+    dataLines.forEach(line => {
+      // CSVパース（ダブルクォート内のカンマを考慮）
+      const cols = [];
+      let cur = '', inQ = false;
+      for (let i = 0; i < line.length; i++) {
+        const c = line[i];
+        if (c === '"') { inQ = !inQ; }
+        else if (c === ',' && !inQ) { cols.push(cur); cur = ''; }
+        else { cur += c; }
+      }
+      cols.push(cur);
+
+      if (cols.length < 2) { skipped++; return; }
+
+      const title = cols[0].replace(/^「|」$/g, '').trim();
+      const channelName = (cols[1] || '').trim();
+      const subs = parseInt(cols[2]) || 0;
+      const views = parseInt(cols[3]) || 0;
+      const ratio = parseFloat(cols[4]) || (subs > 0 && views > 0 ? views / subs : 0);
+      const statusRaw = (cols[5] || '未着手').trim();
+      const status = STATUS_MAP[statusRaw] || 'todo';
+
+      if (!title) { skipped++; return; }
+
+      // 重複チェック（タイトルが既存と一致する場合スキップ）
+      if (planStock.some(p => p.title === title)) { skipped++; return; }
+
+      planStock.push({ id: Date.now() + Math.random(), title, channelName, subs, views, ratio, status });
+      added++;
+    });
+
+    localStorage.setItem('yt_plan_stock', JSON.stringify(planStock));
+    renderStockList(stockFilterCurrent);
+
+    const msg = document.getElementById('csvImportMsg');
+    msg.innerHTML = `<div class="result-ok" style="font-size:12px;padding:6px 10px;margin-bottom:8px;">✅ ${added}件追加${skipped > 0 ? `（${skipped}件スキップ）` : ''}</div>`;
+    setTimeout(() => { msg.innerHTML = ''; }, 4000);
+
+    input.value = '';
+  };
+  reader.readAsText(file, 'UTF-8');
 }
 
 function renderStockList(filter) {
